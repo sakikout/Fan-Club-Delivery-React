@@ -50,3 +50,15 @@ Para rodar a aplicação, escreva no terminal:
 ``` bash
 npm run start
 ```
+
+IMPORTANTE: você precisa colocar as informações da sua API do firebase no arquivo `firebase.js`, especificadamente em `firebaseConfig`.
+``` bash
+const firebaseConfig = {
+    apiKey: "SUA_CHAVE_DE_API",
+    authDomain: "ID_DO_PROJETO.firebaseapp.com",
+    projectId: "ID_DO_PROJETO",
+    storageBucket: "ID_DO_PROJETO.firebasestorage.app",
+    messagingSenderId: "SENDER_ID",
+    appId: "ID_DA_APPP"
+  };
+```
