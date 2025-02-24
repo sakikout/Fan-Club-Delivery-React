@@ -26,7 +26,7 @@ function CustomNavBar() {
               <Nav.Link onClick={() => navigate("/history")} className="mx-2">
                 <FaHistory className="me-1" /> Histórico
               </Nav.Link>
-              <Nav.Link onClick={() => navigate("/history")} className="mx-2">
+              <Nav.Link onClick={() => navigate("/progress")} className="mx-2">
                 <FaShoppingCart className="me-1" /> Pedido Atual
               </Nav.Link>
               <Nav.Link onClick={() => navigate("/settings")} className="mx-2">
