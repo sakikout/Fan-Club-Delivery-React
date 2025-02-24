@@ -41,8 +41,12 @@ Além de possuir uma sidebar para navegação, o contemplará as seguintes pági
 
 As páginas estão sendo prototipadas no [Figma](https://www.figma.com/design/OtLioskCN4mc9hX3vSTpwk/Fan-Club-Delivery?node-id=4-137&t=vJl7Nx57yWordrTt-1), disponíveis apenas para visualização.
 
-
-Para rodar a aplicação, escreva no terminal (tenha certeza que você está na raiz do projeto):
+## Iniciar a Aplicação
+Escreva no terminal (tenha certeza que você está na raiz do projeto) para instalar as dependências:
+``` bash
+npm install
+```
+Para rodar a aplicação, escreva no terminal:
 ``` bash
 npm run start
 ```
