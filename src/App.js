@@ -9,7 +9,6 @@ import DeliveryHistory from './pages/HistoryPage';
 import CheckoutPage from './pages/CheckoutPage';
 import SettingsPage from './pages/SettingsPage';
 import DeliveryProgress from './pages/DeliveryProgressPage';
-import CartPage from './components/CartModal';
 
 function App() {
   return (
