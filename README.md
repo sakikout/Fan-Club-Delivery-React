@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# **CSI606 - Proposta de Trabalho Final**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## *Aluna(o): Beatriz Evelyn Dalfior*
 
-## Available Scripts
+Semestre: 2024/2
 
-In the project directory, you can run:
+### Resumo
 
-### `npm start`
+Este projeto foi desenvolvido visando ser um sistema de entregas de um restaurante chamado "Fã Clube", o qual possuirá funcionalidades e requisitos similares aos aplicativos dessa natureza, como a visualização dos produtos em diferentes categorias, a opção de adicionar ao carrinho de compras, bem como a quantidade desejada, além da visualização do subtotal do pedido. Ademais, o usuário final também será capaz de alterar seu endereço de entrega, conversar com o restaurante e/ou motorista e alterar configurações pessoais, incluindo a possibilidade de deletar sua conta no sistema. Assim, por se tratar apenas da aplicação do cliente, uma integração complexa com a perspectiva do restaurante não será realizada, devido ao prazo de entrega desse trabalho. O objetivo é criar uma experiência fluida e funcional para o usuário durante todo o processo de pedido e entrega.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Tema
 
-### `npm test`
+O trabalho final tem como tema o desenvolvimento de uma aplicação (mobile) voltada para o sistema de delivery de um restaurante.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. Escopo
 
-### `npm run build`
+Este projeto terá as seguintes funcionalidades:
+- Visualização de produtos, sua descrição, preço e imagens em categorias diferentes;
+- Sistema de login de usuário e customização básica;
+- Definição de endereço de entrega;
+- Carrinho de compras;
+- Definição de diferentes tipos de pagamento;
+- Histórico de compras;
+- Visualização do nome e imagem e possível conversa com o motorista e/ou restaurante.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3. Restrições
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Neste trabalho não será considerada a perspectiva do restaurante para o uso do sistema, pois para isso, seria necessário que ele tivesse o seu próprio como interface. Dessa forma, este possível aplicativo para o fornecedor poderá ser considerado como um projeto futuro.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 4. Protótipo
 
-### `npm run eject`
+Além de possuir uma sidebar para navegação, o contemplará as seguintes páginas:
+- Login e Sign in;
+- Progresso de Entrega;
+- Chat com Restaurante e/ou Motorista;
+- Histórico de Entregas;
+- Página Inicial (Home Page);
+- Pagamento (Check-in);
+- Configurações.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+As páginas estão sendo prototipadas no [Figma](https://www.figma.com/design/OtLioskCN4mc9hX3vSTpwk/Fan-Club-Delivery?node-id=4-137&t=vJl7Nx57yWordrTt-1), disponíveis apenas para visualização.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Para rodar a aplicação, escreva no terminal (tenha certeza que você está na raiz do projeto):
+``` bash
+npm run start
+```
