@@ -8,6 +8,7 @@ function CartModal({ show, onHide }) {
   const { cart, removeFromCart, clearCart, feePrice } = useCart();
   const [ subtotal, setSubTotal ] = useState(0);
   const [ totalProducts, setTotalProducts ] = useState(0);
+  const [ disabled, setDisabled ] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +41,7 @@ function CartModal({ show, onHide }) {
           const value_p = calculateTotalProducts(cart);
           setSubTotal(value);
           setTotalProducts(value_p);
+          setDisabled(false);
         }
       }
       
@@ -68,7 +70,7 @@ function CartModal({ show, onHide }) {
       </Modal.Header>
       <Modal.Body>
         {cart.length === 0 ? (
-          <p>O carrinho está vazio.</p>
+          <p className="fs-5">O carrinho está vazio.</p>
         ) : (
           <>
             <ListGroup>
@@ -118,7 +120,10 @@ function CartModal({ show, onHide }) {
       </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="warning" onClick={() => navigate("/checkout")}>
+        <Button 
+          variant="warning" 
+          onClick={() => navigate("/checkout")}
+          disabled={disabled === true}>
           Finalizar Compra
         </Button>
         <Button variant="outline-danger" onClick={handleClearCart}>
