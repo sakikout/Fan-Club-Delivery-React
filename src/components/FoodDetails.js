@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image, Button, Modal, ListGroup, Form, Row } from 'react-bootstrap';
 import { useCart } from "./context/CartProvider";
 import '../App.css';
+import QuantitySelector from './QuantitySelector';
 
 function FoodDetailsModal(props) {
     const { id, name, description, price, imagepath, availableaddons, show } = props;
@@ -31,7 +32,12 @@ function FoodDetailsModal(props) {
     };
 
     const handleAddToCart = () => {
+        if(quantity === 0){
+            return;
+        }
+
       const addons = availableaddons.filter((_, index) => selectedAddons[index]);
+
       addToCart({
           id,
           name,
@@ -44,6 +50,14 @@ function FoodDetailsModal(props) {
   
       props.onHide();
   };
+
+  const minusFunction = () => {
+    if (quantity > 0){
+        setQuantity((quantity - 1));
+    } else {
+        setQuantity(1);
+    }
+  }
 
     return (
         <Modal
@@ -65,9 +79,13 @@ function FoodDetailsModal(props) {
                   <h4>{name}</h4>
                   <p className="fs-5">R${price}</p>
                   <p>{description}</p>
+                  <QuantitySelector 
+                    minusfunction = {minusFunction}
+                    plusfunction = {(e) => setQuantity((quantity + 1))}
+                    quantity={quantity}></QuantitySelector>
                 </div>
                 </Row>
-                <div className="m-3">
+                <Row className="m-3">
                 <h5>Adicionais</h5>
                 <ListGroup variant="flush" >
                     {availableaddons.map((addon, index) => (
@@ -83,25 +101,15 @@ function FoodDetailsModal(props) {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
-                </div>
-                <div className="m-3">
-                <h5>Quantidade</h5>
-                <Form.Control
-                    
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                />
-                </div>
-            <div className="m-3">
+                </Row>
+            <Row className="m-3">
               <h5>Observações</h5>
                 <Form.Control
                     as="textarea"
                     placeholder='Escreva aqui observações que achar pertinentes para o pedido.'
                     onChange={(e) => setObs(e.target.value)}
                 />
-            </div>  
+            </Row>  
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="warning" onClick={handleAddToCart}>
