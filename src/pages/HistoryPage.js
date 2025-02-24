@@ -10,7 +10,7 @@ import CustomNavBar from '../components/NavBar';
 const firestoreService = new FirestoreService();
 
 const DeliveryHistory = () => {
-  const [orders, setOrders] = useState([]);
+  const [ orders, setOrders ] = useState([]);
 
   useEffect(() => {
       getOrders();
@@ -21,6 +21,7 @@ const DeliveryHistory = () => {
     try {
         const orders_db = await firestoreService.getUserOrders();
         setOrders(orders_db);
+        console.log(orders_db);
 
       } catch (error) {
             console.error("Erro ao buscar pedidos do usuário:", error);
@@ -32,6 +33,7 @@ const DeliveryHistory = () => {
       <>
       <CustomNavBar></CustomNavBar>
       <Container className="gap-2 mt-3 mb-3">
+        <p className="fw-bold fs-4">Histórico de Pedidos</p>
         <Row xs={1} md={2} className="g-4">
         { orders.length === 0 ?
             <Col>
@@ -40,9 +42,9 @@ const DeliveryHistory = () => {
             : orders.map((order) => (
               <Col key ={order.id}>
                 <OrderTile
+                  orderName={order.orderName}
                   id={order.id}
                   data={order.data}
-                  order={order.order}
                   status={order.status}>
                 </OrderTile>
               </Col>
