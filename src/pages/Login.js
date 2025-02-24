@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Col, Form, Row, Button, Container, Image } from 'react-bootstrap';
+import { InputGroup, Card, Col, Form, Row, Button, Container, Image } from 'react-bootstrap';
+import { FaRegUser, FaKey } from "react-icons/fa";
 import '../App.css';
 import AuthService from "../services/auth/AuthService";
 import logo from "../assets/logo/fa_clube_logo.png"
@@ -22,12 +23,13 @@ function Login(){
       event.preventDefault();
       const form = event.currentTarget;
 
-      if (form.checkValidity() === false) {
-        event.stopPropagation();
-        return;
+      setValidated(true);
+
+      if (!form.checkValidity() || !isValidEmail(email)) {
+          event.stopPropagation();
+          return;
       }
 
-      setValidated(true);
         try {
           await authService.signInWithEmailAndPassword(
               email,
@@ -39,58 +41,75 @@ function Login(){
         }
 
     };
+
+    const isValidEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
   
   
     return (
       <>
-      <Container className="vh-80 w-50 d-flex align-items-center justify-content-center">
-      <Row className="w-50 mx-auto">
+      <Container className="w-50 d-flex align-items-center justify-content-center">
+      <Card className="p-5 login_container">
+      <Row className="mx-auto">
       <Form noValidate validated={validated}>
-        <Row className=' mx-auto text-center'>
-          <Image src={logo} roundedCircle/>
-          <h2>Bem-vindo de volta!</h2>
+        <Row className='mx-auto text-center'>
+          <div className="brand_logo_container">
+          <Image className="brand_logo" src={logo} roundedCircle/>
+          </div>
+          <h4>Bem-vindo de volta!</h4>
         </Row>
-      <Row className="mb-3">
-      <div className="d-flex gap-2">
-      <Form.Group as={Row} controlId="formGridEmail">
-        <Form.Label>Email</Form.Label>
+      <Row className="mt-2 mb-3 justify-content-center">
+        <div className="w-75 gap-3">
+      <Form.Group className="mb-2" controlId="formGridEmail">
+        <InputGroup hasValidation>
+        <InputGroup.Text id="inputGroupText"><FaRegUser/></InputGroup.Text>
         <Form.Control 
           name = "email"
           type="email" 
-          placeholder="exemplo@email.com" 
+          placeholder="SeuEmail@email.com" 
           onChange={(e => setEmail(e.target.value))}
           required/>
         <Form.Control.Feedback type="invalid">
-          Informe seu e-mail.
+          Informe um e-mail válido.
         </Form.Control.Feedback>
+        </InputGroup>
       </Form.Group>
-      </div>
-      <div className="d-flex gap-2 mt-2">
-      <Form.Group as={Row} controlId="formGridPassword">
-        <Form.Label>Senha</Form.Label>
+      <Form.Group className="mb-3" controlId="formGridPassword">
+        <InputGroup hasValidation>
+        <InputGroup.Text id="inputGroupText"><FaKey/></InputGroup.Text>
         <Form.Control 
           name = "senha"
           type="password" 
-          placeholder="Digite sua senha." 
+          placeholder="Digite sua senha" 
           onChange={(e => setSenha(e.target.value))}
           required/>
         <Form.Control.Feedback type="invalid">
            Informe sua senha.
          </Form.Control.Feedback>
+         </InputGroup>
       </Form.Group>
-      </div>
-    </Row>
-    
-    <div className="d-flex gap-2 mt-2 mb-3 ">
-    <Button variant="warning" type="submit" onClick={handleSubmit}>
-      Entrar
-    </Button>
-    <Button variant="outline-secondary" onClick={handleSignIn}>
-      Cadastrar-se
-    </Button>
+      <div className="d-flex mt-2 justify-content-center">
+      <Button 
+        className="fw-bold fs-6 login_button"
+        variant="warning" 
+        type="submit" 
+        onClick={handleSubmit}>
+          Entrar
+      </Button>
     </div>
-    </Form>
+    </div>
     </Row>
+    </Form>
+    <div className="mt-1">
+      <div className="d-flex gap-1 mt-1 mb-3 justify-content-center">
+      <span>Não tem uma conta?</span> <a className="fw-bold text_link" onClick={handleSignIn}>Cadastrar-se!</a>
+      </div>
+    </div>
+
+    </Row>
+    </Card>
     </Container>
     </>
     );

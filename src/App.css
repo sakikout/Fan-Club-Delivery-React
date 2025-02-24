@@ -44,6 +44,50 @@ body {
   color: #050505 !important;
 }
 
+.brand_logo {
+  height: auto !important;
+  max-width: 250px !important;
+}
+
+.login_button {
+  width: 80%;
+}
+
+.signin_button {
+  width: 300px;
+}
+
+.text_link {
+  text-decoration: none;
+  color: #050505;
+}
+
+.text_link:hover {
+  cursor: pointer;
+}
+
+#inputGroupText {
+  background: #f5c030 !important;
+	color: white !important;
+	border: 0 !important;
+	border-radius: 0.25rem 0 0 0.25rem !important;
+}
+
+.login_container {
+  width: 500px;
+  margin-top: auto;
+  margin-bottom: auto;
+  background: #ffffff !important;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 5px;
+}
 
 @keyframes App-logo-spin {
   from {

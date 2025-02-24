@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Col, Form, Row, Button, Container, Image } from 'react-bootstrap';
+import { InputGroup, Card, Col, Form, Row, Button, Container, Image } from 'react-bootstrap';
+import { FaRegUser, FaKey } from "react-icons/fa";
 import '../App.css';
 import AuthService from "../services/auth/AuthService";
 import logo from "../assets/logo/fa_clube_logo.png"
@@ -32,11 +33,14 @@ function SignIn(){
       event.preventDefault();
       const form = event.currentTarget;
 
-      if (form.checkValidity() === false) {
+      setValidated(true);
+
+      if (form.checkValidity() === false || !isValidEmail(formSignIn.email) || !isValidPassword(formSignIn.senha)) {
         event.stopPropagation();
         return;
+        
       } else {
-        setValidated(true);
+
         try {
           await authService.signUpWithEmailAndPassword(
             formSignIn.email,
@@ -52,80 +56,107 @@ function SignIn(){
       }
 
     };
+
+    const isValidEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+    
+    const isValidPassword = (password) => {
+      return password.length >= 8 && 
+             /[A-Z]/.test(password) &&
+             /[a-z]/.test(password) && 
+             /\d/.test(password) && 
+             /[@$!%*?&]/.test(password); 
+    };
+    
   
     return (
-      <Container className="vh-80 w-50 d-flex align-items-center justify-content-center">
-      <Row className="justify-content-md-center">
+      <Container className="d-flex align-items-center justify-content-center">
+      <Card className="p-5 login_container">
+      <Row className="mx-auto">
       <Form noValidate validated={validated}>
-        <Row className='w-50 mx-auto text-center'>
-          <Image src={logo} roundedCircle />
+        <Row className='mx-auto text-center'>
+          <div className="brand_logo_container">
+            <Image src={logo} className="brand_logo" roundedCircle />
+          </div>
           <h4>Venha fazer parte disso!</h4>
         </Row>
-        <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridName">
-          <Form.Label>Nome</Form.Label>
+        <Row className="mt-2 mb-3 justify-content-center">
+          <div className="w-75 gap-3">
+        <Form.Group className="mb-2" controlId="formGridName">
           <Form.Control 
             name = "nome"
-            placeholder="Digite seu nome." 
+            placeholder="Digite seu nome" 
             onChange={handleInputChange}
             required/>
             <Form.Control.Feedback type="invalid">
-              Não pode estar vazio.
+              Não pode estar vazio!
             </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridLastName">
-          <Form.Label>Sobrenome</Form.Label>
+        <Form.Group className="mb-2" controlId="formGridLastName">
           <Form.Control 
             name = "sobrenome"
-            placeholder="Digite seu sobrenome." 
+            placeholder="Digite seu sobrenome" 
             onChange={handleInputChange}
             required/>
             <Form.Control.Feedback type="invalid">
-              Não pode estar vazio.
+              Não pode estar vazio!
             </Form.Control.Feedback>
         </Form.Group>
-      </Row>
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridEmail">
-          <Form.Label>Email</Form.Label>
+        <Form.Group className="mb-2" controlId="formGridEmail">
+          <InputGroup hasValidation>
+          <InputGroup.Text id="inputGroupText"><FaRegUser/></InputGroup.Text>
           <Form.Control 
             name = "email"
             type="email" 
-            placeholder="exemplo@email.com" 
+            placeholder="SeuEmail@email.com" 
             onChange={handleInputChange}
             required/>
             <Form.Control.Feedback type="invalid">
               Insira um e-mail válido.
             </Form.Control.Feedback>
+            </InputGroup>
         </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridPassword">
-          <Form.Label>Senha</Form.Label>
+        <Form.Group className="mb-3" controlId="formGridPassword">
+          <InputGroup hasValidation>
+          <InputGroup.Text id="inputGroupText"><FaKey/></InputGroup.Text>
           <Form.Control 
             name = "senha"
             type="password" 
-            placeholder="Digite sua senha." 
+            placeholder="Digite sua senha" 
             onChange={handleInputChange}
             required/>
+            <Form.Text id="passwordHelpBlock" muted>
+            Sua senha deve ter pelo menos 8 caracteres e conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial. 
+            </Form.Text>
             <Form.Control.Feedback type="invalid">
               Insira uma senha válida.
             </Form.Control.Feedback>
+            </InputGroup>
         </Form.Group>
-      </Row>
-      <div className="d-flex gap-2 mt-2 mb-3 ">
-      <Button variant="warning" type="submit" onClick={handleSubmit}>
-        Cadastrar
-      </Button>
+
+      <div className="d-flex mt-2 justify-content-center">
       <Button 
-        variant="outline-secondary" 
-        type="button" 
-        onClick={() => navigate("/", { replace: false })}>
-        Entrar
+        className="fw-bold fs-6 signin_button"
+        variant="warning" 
+        type="submit" 
+        onClick={handleSubmit}>
+        Criar Conta
       </Button>
       </div>
+      </div>
+      </Row>
       </Form>
       </Row>
+      <div className="mt-1">
+      <div className="d-flex gap-1 mt-1 justify-content-center">
+      <span>Já tem uma conta?</span> <a className="fw-bold text_link" onClick={() => navigate("/", { replace: false })}>Entrar!</a>
+      </div>
+    </div>
+      </Card>
     </Container>
     );
   }
