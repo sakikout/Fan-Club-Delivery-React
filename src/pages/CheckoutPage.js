@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, FloatingLabel, Form, Button, InputGroup } from 'react-bootstrap';
 import FirestoreService from "../services/firestore";
-import { db } from "../services/firebase"; 
-import { collection, addDoc } from "firebase/firestore";
 import { useCart } from '../components/context/CartProvider';
-import { useUser } from "../components/context/UserProvider"
+import { useUser } from "../components/context/UserProvider";
 import CustomNavBar from '../components/NavBar';
 
 const firestoreService = new FirestoreService();
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const { payment, setPayment, setCurrentOrder, feePrice, deliveryTime, cart } = useCart();
+  const { user, userData } = useUser();
+  const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart } = useCart();
   const [ paymentMethod, setPaymentMethod ] = useState(" ");
   const [ creditCards, setCreditCards ] = useState([]);
   const [ addCardClicked, setAddCardClicked ] = useState(false);
@@ -48,6 +46,8 @@ const CheckoutPage = () => {
     };
 
     fetchCards();
+
+    console.log(cart);
 
   }, []);
 
@@ -91,26 +91,26 @@ const CheckoutPage = () => {
       }, 0);
 
       const total = subtotal + feePrice;
-      const address = user.address;
+      const address = userData.address;
+      const orderName = cart.map(item => item.name).join(" + ");
+
   
       const orderData = {
-        userId: user.uid,
+        orderName: orderName,
         items: cart.map(item => ({
           id: item.id,
           name: item.name,
           quantity: item.quantity,
           price: item.price,
-          availableAddons: item.availableAddons ? item.availableAddons.map(addon => ({
-            id: addon.id,
+          availableAddons: item.addons ? item.addons.map(addon => ({
             name: addon.name,
-            quantity: addon.quantity,
             price: addon.price,
           })) : [],
         })),
         subtotal,
         feePrice,
         total,
-        paymentMethod,
+        paymentMethod: payment,
         deliveryTime,
         address
       };
@@ -119,7 +119,7 @@ const CheckoutPage = () => {
         orderData.changeFor = troco;
       }
   
-      const orderRef = await addDoc(collection(db, "orders"), orderData);
+      const orderRef = await firestoreService.saveOrderToDatabase(orderData, prepTime, deliveryTime);
       console.log("Pedido salvo com ID:", orderRef.id);
       setCurrentOrder(orderRef.id);
   
