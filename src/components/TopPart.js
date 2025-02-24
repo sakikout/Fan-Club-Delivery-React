@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, FloatingLabel, Col, Row, Container, ListGroup} from 'react-bootstrap';
+import { InputGroup, Button, Form, FloatingLabel, Col, Row, Container, ListGroup} from 'react-bootstrap';
 import '../App.css';
 import FirestoreService from '../services/firestore';
+import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUser } from "./context/UserProvider";
 import { useCart } from "./context/CartProvider";
 
@@ -69,6 +70,8 @@ function TopPart(props){
         <Col xs={6}>
         <Form.Label className="fw-bold fs-4" 
         htmlFor="address">Endereço de Entrega</Form.Label>
+        <InputGroup hasValidation>
+         <InputGroup.Text><FaMapMarkerAlt/></InputGroup.Text>
         <Form.Control
             type="text"
             name="address"
@@ -76,8 +79,9 @@ function TopPart(props){
             onChange={(e => setAddress(e.target.value))}
             placeholder='Insira sua localização atual'
         />
+         </InputGroup>
         {   userData ?
-            
+        
         <Form.Text 
         className="fw-bold fs-6"
         id="address" muted> 
