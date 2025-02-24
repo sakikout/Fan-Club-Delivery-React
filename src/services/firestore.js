@@ -34,13 +34,13 @@ class FirestoreService {
     if (!user) throw new Error("Usuário não autenticado.");
 
     const orderRef = await addDoc(ordersRef, {
-      user: user.uid,
+      userId: user.uid,
       data: new Date().toISOString(),
       estimatedDeliveryTime: new Date(Date.now() + (prepTime + deliveryTime) * 60000).toISOString(),
       order: receipt,
       status: "Recebendo pedido"
     });
-    return orderRef.id;
+    return orderRef;
   }
 
   async getOrderById(orderId) {
@@ -65,7 +65,7 @@ class FirestoreService {
     if (!user) throw new Error("Usuário não autenticado.");
 
     const ordersRef = collection(this.db, 'orders');
-    const q = query(ordersRef, where('userId', '==', user.uid), orderBy('data', 'desc'));
+    const q = query(ordersRef, where('userId', '==', user.uid));
     const querySnapshot = await getDocs(q);
 
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
