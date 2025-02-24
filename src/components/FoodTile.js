@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useState } from 'react';
 import { Card, ListGroup, Button} from 'react-bootstrap';
 import '../App.css';
 import FoodDetailsModal from './FoodDetails';
 
 function FoodTile(props){
     const { id, name, description, price, imagepath, availableaddons } = props;
-    const [modalShow, setModalShow] = React.useState(false);
+    const [modalShow, setModalShow] = useState(false);
 
     return (
       <>
