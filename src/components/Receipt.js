@@ -3,17 +3,20 @@ import { Container, Card, Button, ListGroup } from "react-bootstrap";
 import CustomNavBar from '../components/NavBar';
 import FirestoreService from "../services/firestore";
 import { useUser } from "../components/context/UserProvider";
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const firestoreService = new FirestoreService();
 
-const Receipt = (order) => {
+const Receipt = (props) => {
+  const { id } = props;
   const { user, userData } = useUser();
   const [ orderInfo, setOrderInfo ] = useState({});
 
     useEffect(() => {
       const fetchOrders = async () => {
         if (user) {
-          const userOrder = await firestoreService.getOrderById(order);
+          const userOrder = await firestoreService.getOrderById(id);
           console.log(userOrder);
           setOrderInfo(userOrder);
         }
@@ -25,22 +28,28 @@ const Receipt = (order) => {
   
     }, []);
 
+    const formatDate = (isoString) => {
+        return format(new Date(isoString), "dd/MM/yyyy - HH:mm", { locale: ptBR });
+    };
   return (
     <>
       <CustomNavBar />
       <Container className="mt-4">
         {orderInfo ? (
           <Card className="text-center">
-            <Card.Header className="fw-bold">Pedido #{orderInfo.id}</Card.Header>
+            <Card.Header className="fw-bold">Pedido #{orderInfo.orderName}</Card.Header>
 
             <Card.Body>
               <Card.Title className="mb-3">Resumo do Pedido</Card.Title>
+              { orderInfo.order ?
+                ( <>
               <ListGroup variant="flush">
+  
                 {orderInfo.order.items.map((item, index) => (
                   <ListGroup.Item key={index}>
                     <strong>{item.quantity}x {item.name}</strong> - R$ {(item.price * item.quantity)}
                     {item.availableAddons && item.availableAddons.length > 0 && (
-                      <ul className="mt-1" style={{ fontSize: "0.9rem", color: "gray" }}>
+                      <ul className="mt-1 list-unstyled" style={{ fontSize: "0.9rem", color: "gray" }}>
                         {item.availableAddons.map((addon, i) => (
                           <li key={i}>{addon.name} (+ R$ {(addon.price)})</li>
                         ))}
@@ -48,17 +57,21 @@ const Receipt = (order) => {
                     )}
                   </ListGroup.Item>
                 ))}
+                
               </ListGroup>
 
-              <h5 className="mt-3">Total: R$ {orderInfo.order.total}</h5>
-              <p className="mb-1">Pagamento: {orderInfo.order.paymentMethod}</p>
+              <p className="mb-1">Endereço: {orderInfo.order.address} </p>
+              <p className="mb-1">Forma de Pagamento: {orderInfo.order.paymentMethod}</p>
               {orderInfo.order.paymentMethod === "Dinheiro" && <p>Troco para: R$ {orderInfo.order.changeFor}</p>}
-
-              <p className="text-muted">Entrega estimada para: {orderInfo.estimatedDeliveryTime} min</p>
-              <Button variant="warning">Acompanhar entrega</Button>
+              <h5 className="mt-3">Total: R$ {orderInfo.order.total.toFixed(2)}</h5>
+              <p className="text-muted">Entrega estimada para: {formatDate(orderInfo.estimatedDeliveryTime)} min</p>
+              
+              </>
+              )
+              : " "}
             </Card.Body>
 
-            <Card.Footer className="text-muted">Status: {order.status}</Card.Footer>
+            <Card.Footer className="text-muted">Status: <span className="fw-bold">{orderInfo.status}</span></Card.Footer>
           </Card>
         ) : (
           <p className="text-center">Não encontrado...</p>
