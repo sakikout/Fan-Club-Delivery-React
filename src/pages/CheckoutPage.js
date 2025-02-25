@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, FloatingLabel, Form, Button, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, FloatingLabel, Form, Button, InputGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import FirestoreService from "../services/firestore";
+import { QRCodeCanvas } from "qrcode.react";
+import { FaRegCopy } from "react-icons/fa";
 import { useCart } from '../components/context/CartProvider';
 import { useUser } from "../components/context/UserProvider";
 import CustomNavBar from '../components/NavBar';
@@ -16,6 +18,9 @@ const CheckoutPage = () => {
   const [ creditCards, setCreditCards ] = useState([]);
   const [ addCardClicked, setAddCardClicked ] = useState(false);
   const [ troco, setTroco ] = useState(" ");
+  const [qrValue, setQrValue] = useState("");
+  const [show, setShow] = useState(false);
+  const target = useRef(null);
 
   const [formCard, setFormCard] = useState({
         flag: "",
@@ -110,6 +115,17 @@ const CheckoutPage = () => {
   
     return true;
   };
+
+  const validateChange = (change) => {
+
+    const moneyRegex  = /^\d+\.\d{2}$/;
+    if (!moneyRegex.test(change)) {
+      alert("Insira um valor válido.");
+      return false;
+    }
+
+    setPayment("Dinheiro");
+  }
   
 
   const createReceipt = async () => {
@@ -176,6 +192,16 @@ const CheckoutPage = () => {
   };
 
 
+  const generateRandomPix = () => {
+    const randomPixCode = `00020126480014BR.GOV.BCB.PIX0114+5581999999995204000053039865802BR5913FAN CLUB6009MINAS GERAIS62140510${Math.floor(Math.random() * 10000000000)}`;
+    setQrValue(randomPixCode);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(qrValue);
+    setShow(!show);
+  };
+
     return (
       <>
       <CustomNavBar></CustomNavBar>
@@ -230,6 +256,7 @@ const CheckoutPage = () => {
           </div>
 
           { addCardClicked === true ?
+          <Card className="p-3">
             <Form className="gap-2 mt-2 mb-3" onSubmit={createCreditCard}>
               <Form.Group className="mb-3" controlId="formGroupName">
                 <Form.Label>Nome no Cartão</Form.Label>
@@ -296,6 +323,7 @@ const CheckoutPage = () => {
                </Form.Control.Feedback>
               </Form.Group>
               </Row>
+              <div className="d-flex mt-2 gap-2">
               <Button 
                 variant="primary" 
                 type="submit">
@@ -303,7 +331,10 @@ const CheckoutPage = () => {
               </Button>
               <Button variant="outline-secondary"
                       onClick={() => setAddCardClicked(false)}>Cancelar</Button>
+              </div>
             </Form>
+            </Card>
+
             : " "
           }
           </>
@@ -316,21 +347,26 @@ const CheckoutPage = () => {
         {
           paymentMethod === "cash" ?
           <>
-          <InputGroup className="mb-3">
-            <Form.Label>Troco:</Form.Label>
+          <Form>
+          <InputGroup className="mb-3 w-50 align-items-center">
+          <InputGroup.Text id="changeFor" style={{ background: "#f5c030"}}> Troco </InputGroup.Text>
             <Form.Control
-              name = "change"
+              name = "changeFor"
               onChange={(e) => {setTroco(e.target.value)}}
-              placeholder="Insira o troco necessário"
-              aria-describedby="basic-addon"
+              placeholder="Insira o troco necessário. Exemplo de formato aceito: 50.00"
+              aria-describedby="changeFor"
             />
+            <Form.Control.Feedback type="invalid">
+              Insira um troco válido.
+            </Form.Control.Feedback>
             <Button 
-            onClick={() => setPayment("Dinheiro")}
+            onClick={() => validateChange(troco)}
             variant="warning"
             >
               Confirmar
             </Button>
           </InputGroup>
+          </Form>
           </>
 
           : " "
@@ -348,13 +384,62 @@ const CheckoutPage = () => {
         {
           paymentMethod === "pix" ?
           <>
-          
+          <div className="d-flex gap-2 mt-2 mb-3">
+            <Button variant="warning"
+                    onClick={generateRandomPix}
+            >Gerar Código Pix</Button>
+          </div>
+
+      <Card className="text-center shadow-lg p-4" style={{ maxWidth: "400px", margin: "auto" }}>
+        <Card.Body>
+          <Card.Title className="mb-3 fw-bold">Pagamento via Pix</Card.Title>
+          <Card.Text className="text-muted">Escaneie o QR Code abaixo ou copie o código Pix para pagar.</Card.Text>
+        
+          {qrValue && (
+            <div className="d-flex justify-content-center my-3">
+              <QRCodeCanvas value={qrValue} size={180} />
+            </div>
+          )}
+
+          <Form.Group className="mt-3">
+          <InputGroup>
+            <Form.Control
+              type="text"
+              value={qrValue}
+              readOnly
+            />
+            <OverlayTrigger
+              target={target.current} 
+              show={show}
+              delay={{show: 150, hide: 400}} 
+              placement="right"
+              overlay={(props) => (
+                <Tooltip id="overlay-input-pix" {...props}>
+                  Pix copiado!
+                </Tooltip>
+              )}
+            >
+            <Button variant="warning" onClick={handleCopy}>
+              <FaRegCopy/>
+            </Button>
+            </OverlayTrigger>
+          </InputGroup>
+          </Form.Group>
+
+            <Button 
+              variant="success" 
+              className="mt-3 w-100" 
+              onClick={() => setPayment("Pix")}
+              disabled={!qrValue}>Confirmar Pagamento</Button>
+            <Card.Text className="text-muted">Aguarde a confirmação do pagamento para prosseguir.</Card.Text>
+          </Card.Body>
+        </Card>
           </>
 
           : " "
         }
 
-      <div className="d-flex gap-2 mt-2 mb-3">
+      <div className="d-flex gap-2 mt-3 mb-3">
         <Button 
           className="fs-5"
           onClick={() => createReceipt()}
