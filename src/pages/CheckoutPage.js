@@ -13,7 +13,7 @@ const firestoreService = new FirestoreService();
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, userData } = useUser();
-  const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart } = useCart();
+  const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart, handleClearCart } = useCart();
   const [ paymentMethod, setPaymentMethod ] = useState(" ");
   const [ creditCards, setCreditCards ] = useState([]);
   const [ addCardClicked, setAddCardClicked ] = useState(false);
@@ -183,6 +183,7 @@ const CheckoutPage = () => {
       setCurrentOrder(orderRef.id);
   
       alert("Pedido realizado com sucesso!");
+      handleClearCart();
       navigate("/progress",  { replace: false });
 
     } catch (error) {

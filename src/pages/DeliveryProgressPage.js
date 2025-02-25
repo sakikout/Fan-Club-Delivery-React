@@ -41,7 +41,7 @@ const DeliveryProgress = () => {
               {orders.map((order, index) => (
                 <Tab 
                   eventKey={order.id} 
-                  title={order.orderName} 
+                  title={order.order.orderName} 
                   key={order.id}>
                   <Row>
                     { orders

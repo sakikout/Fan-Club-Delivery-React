@@ -37,7 +37,7 @@ const Receipt = (props) => {
       <Container className="mt-4">
         {orderInfo ? (
           <Card className="text-center">
-            <Card.Header className="fw-bold">Pedido #{orderInfo.orderName}</Card.Header>
+            <Card.Header className="fw-bold">Pedido #{ orderInfo.order ? <>{orderInfo.order.orderName} </>: " "}</Card.Header>
 
             <Card.Body>
               { orderInfo.order ?

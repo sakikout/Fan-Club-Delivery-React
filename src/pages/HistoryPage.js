@@ -42,7 +42,7 @@ const DeliveryHistory = () => {
             : orders.map((order) => (
               <Col key ={order.id}>
                 <OrderTile
-                  orderName={order.orderName}
+                  orderName={order.order.orderName}
                   id={order.id}
                   data={order.data}
                   status={order.status}>

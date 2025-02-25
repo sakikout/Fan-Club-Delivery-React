@@ -42,7 +42,9 @@ const ReceiptModal = (props) => {
             centered
         >
         <Modal.Header closeButton>
-        <Modal.Title># {orderInfo.orderName}</Modal.Title>             
+        <Modal.Title># { orderInfo.order ? <>{orderInfo.order.orderName} </>: " "}
+        
+        </Modal.Title>             
         </Modal.Header>
         <Modal.Body>
             <h5>Detalhes do Pedido</h5>
