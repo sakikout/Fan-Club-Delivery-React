@@ -120,7 +120,9 @@ function TopPart(props){
         <div className="gap-2 mt-1 mb-3"> 
         <span className="fw-bold fs-4" >Informações de Entrega</span> 
         <ListGroup>
+            { feePrice ? 
             <ListGroup.Item>Taxa de Entrega: <span className="fw-bold fs-6">R${feePrice.toFixed(2)}</span></ListGroup.Item>
+            : " "} 
             <ListGroup.Item>Tempo de Entrega: <span className="fw-bold fs-6">{deliveryTime}</span></ListGroup.Item>
             <ListGroup.Item>Tempo de Preparo: <span className="fw-bold fs-6">{prepTimeString}</span></ListGroup.Item>
         </ListGroup>
