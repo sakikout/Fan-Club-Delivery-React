@@ -40,7 +40,6 @@ const Receipt = (props) => {
             <Card.Header className="fw-bold">Pedido #{orderInfo.orderName}</Card.Header>
 
             <Card.Body>
-              <Card.Title className="mb-3">Resumo do Pedido</Card.Title>
               { orderInfo.order ?
                 ( <>
               <ListGroup variant="flush">
