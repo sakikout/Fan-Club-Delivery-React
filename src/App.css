@@ -49,6 +49,17 @@ body {
   max-width: 250px !important;
 }
 
+.chat_logo {
+  height: auto !important;
+  max-height: 100px !important;
+  max-width: 100px !important;
+  display: block;
+}
+
+.chat_card {
+  max-width: 950px !important;
+}
+
 .login_button {
   width: 80%;
 }
