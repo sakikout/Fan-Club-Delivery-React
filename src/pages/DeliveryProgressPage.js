@@ -89,7 +89,9 @@ const DeliveryProgress = () => {
               ))}
 
           </Tabs>
-        ) : " "}
+        ) : <Col>
+            <span className="fs-5">Nenhum pedido foi encontrado.</span>
+            </Col>}
       </Container>
     </>
   );
