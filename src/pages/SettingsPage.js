@@ -303,6 +303,63 @@ const SettingsPage = () => {
 
           : " "
         }
+
+      { itemSelected === 4 ?
+
+        <Card border="danger">
+            <Card.Body>
+              <Card.Title>Deletar Conta</Card.Title>
+              <Card.Subtitle className="mb-3 text-muted">Uma vez deletada, você perderá o acesso a sua conta e aos seus pedidos.</Card.Subtitle>
+              <Card.Text>
+            <Form className="mb-1" noValidate validated={validated}>
+          <Row>
+            <Col>
+                <Form.Group>
+                  <InputGroup>
+                    <InputGroup.Text><FaKey/></InputGroup.Text>
+                  <Form.Control
+                      type="password"
+                      placeholder="Insira sua senha"
+                      aria-describedby="passwordInput"
+                      required
+                    />
+                  <Form.Control.Feedback type="invalid">
+                    Insira uma senha válida.
+                  </Form.Control.Feedback>
+                </InputGroup>
+                </Form.Group>
+              </Col>
+              <Col>
+              <Form.Group>
+                  <InputGroup>
+                    <InputGroup.Text><GoKey/></InputGroup.Text>
+                      <Form.Control
+                        type="password"
+                        placeholder="Confirme sua senha"
+                        aria-describedby="passwordConfirmInput"
+                        required
+                      />
+                  <Form.Control.Feedback type="invalid">
+                    As senhas precisam ser iguais.
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
+            </Col>
+          <Col>
+          <Button variant="danger">
+            Confirmar
+          </Button>
+        </Col>
+
+        </Row>
+      </Form>
+
+      </Card.Text>
+      </Card.Body>
+      </Card>
+
+        : " "
+    }
         </Col>
 
 
