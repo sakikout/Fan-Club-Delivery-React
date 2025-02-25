@@ -54,6 +54,11 @@ const CheckoutPage = () => {
 
   const createCreditCard = async (event) => {
     event.preventDefault()
+
+    if (!validateCard(formCard)) {
+      return;
+    }
+
     try {
       const new_creditCard = await firestoreService.addCreditCard(formCard);
       if (new_creditCard){
@@ -68,6 +73,44 @@ const CheckoutPage = () => {
 
   }
 
+  const validateCard = (cardData) => {
+    const { cardNumber, expiryDate, CVV, cardHolder } = cardData;
+  
+    if (!cardHolder || cardHolder.trim().length === 0) {
+      alert("Nome no cartão inválido.");
+      return false;
+    }
+  
+    const cardNumberRegex = /^[0-9]{13,19}$/;
+    if (!cardNumberRegex.test(cardNumber.replace(/\s/g, ""))) {
+      alert("Número do cartão inválido.");
+      return false;
+    }
+  
+    const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+    if (!expiryRegex.test(expiryDate)) {
+      alert("Data de validade inválida.");
+      return false;
+    } else {
+      const [month, year] = expiryDate.split("/").map(Number);
+      const currentYear = new Date().getFullYear() % 100;
+      const currentMonth = new Date().getMonth() + 1;
+  
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        alert("O cartão já expirou.");
+        return false;
+      }
+    }
+  
+    const cvvRegex = /^[0-9]{3,4}$/;
+    if (!cvvRegex.test(CVV)) {
+      alert("CVV inválido.");
+      return false;
+    }
+  
+    return true;
+  };
+  
 
   const createReceipt = async () => {
     try {
@@ -195,15 +238,24 @@ const CheckoutPage = () => {
                 name ="cardHolder"
                 type="text" 
                 placeholder="Insira o nome escrito no cartão"/>
+                <Form.Control.Feedback type="invalid">
+                  Insira o nome no cartão.
+               </Form.Control.Feedback>
               </Form.Group>
               <Row className="mb-3">
                 <Form.Group as={Col} xs={7} controlId="formGridNumber">
                   <Form.Label>Número do Cartão</Form.Label>
                   <Form.Control 
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    const formatted = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
+                    setFormCard({ ...formCard, cardNumber: formatted });
+                  }}
                   name="cardNumber"
                   type="text" 
                   placeholder="•••• •••• •••• ••••" />
+                <Form.Control.Feedback type="invalid">
+                  Insira um número válido.
+               </Form.Control.Feedback>
                 </Form.Group>
 
               <Form.Group as={Col} controlId="formGridFlag">
@@ -213,6 +265,9 @@ const CheckoutPage = () => {
                 name="flag"
                 type="text" 
                 placeholder="Visa, etc" />
+              <Form.Control.Feedback type="invalid">
+                  Informe a bandeira do cartão.
+               </Form.Control.Feedback>
               </Form.Group>
               </Row>
 
@@ -224,6 +279,9 @@ const CheckoutPage = () => {
                 name="CVV"
                 type="text" 
                 placeholder="•••"/>
+                <Form.Control.Feedback type="invalid">
+                  Insira um CVV válido.
+               </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridExpiryDate">
@@ -233,6 +291,9 @@ const CheckoutPage = () => {
                   name="expiryDate"
                   type="text" 
                   placeholder="XX/XX"/>
+                <Form.Control.Feedback type="invalid">
+                  Insira uma data válida.
+               </Form.Control.Feedback>
               </Form.Group>
               </Row>
               <Button 
