@@ -1,7 +1,7 @@
 import { getFirestore, collection, addDoc, 
         getDocs, doc, getDoc, updateDoc, deleteDoc, setDoc,
         query, where, orderBy, arrayUnion } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getAuth, updatePassword } from 'firebase/auth';
 
 class FirestoreService {
   constructor() {
@@ -58,7 +58,6 @@ class FirestoreService {
         return [];
       }
   }
-
 
   async getUserOrders() {
     const user = this.auth.currentUser;
@@ -172,6 +171,22 @@ class FirestoreService {
     await updateDoc(doc(this.db, 'users', user.uid), { email: newEmail });
     console.log("E-mail atualizado com sucesso!");
   }
+
+  async updateUserPassword(newPassword) {
+    try {
+      const user = this.auth.currentUser;
+      if (!user) throw new Error("Usuário não autenticado.");
+  
+      await updatePassword(user, newPassword);
+      alert("Senha atualizada com sucesso!");
+  
+    } catch (error) {
+      console.error("Erro ao atualizar senha:", error);
+      alert("Erro ao atualizar a senha. Faça login novamente e tente outra vez.");
+    }
+  };
+  
+
 
   async updateUserAddress(newAddress, regionSelected) {
     const user = this.auth.currentUser;
