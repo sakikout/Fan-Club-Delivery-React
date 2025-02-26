@@ -100,6 +100,33 @@ class FirestoreService {
       }
   };
 
+  
+  async getCardById(cardNumber) {
+    try {
+        const user = this.auth.currentUser;
+        if (!user) return [];
+    
+        const userRef = doc(this.db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+    
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          const existingCards = userData.creditCards || [];
+      
+          const cardSelected = existingCards.filter(card => card.cardNumber === cardNumber);
+
+          return cardSelected;
+
+        } else {
+          console.log("Usuário não encontrado.");
+          return [];
+        }
+      } catch (error) {
+        console.error("Erro ao buscar cartão:", error);
+        return [];
+      }
+  };
+
   async addCreditCard(cardData) {
     try {
       const user = this.auth.currentUser;
@@ -144,7 +171,7 @@ class FirestoreService {
       const userData = userSnap.data();
       const existingCards = userData.creditCards || [];
   
-      const updatedCards = existingCards.filter(card => card.number !== cardNumber);
+      const updatedCards = existingCards.filter(card => card.cardNumber !== cardNumber);
   
       await updateDoc(userRef, { creditCards: updatedCards });
   
