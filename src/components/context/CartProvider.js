@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearOrderCache = () => {
-    setCurrentOrder(" ");
+    setCurrentOrder("");
   }
 
 
