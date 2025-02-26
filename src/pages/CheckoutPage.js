@@ -7,114 +7,26 @@ import { FaRegCopy } from "react-icons/fa";
 import { useCart } from '../components/context/CartProvider';
 import { useUser } from "../components/context/UserProvider";
 import CustomNavBar from '../components/NavBar';
+import CreditCardComponent from '../components/CreditCard';
 
 const firestoreService = new FirestoreService();
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { user, userData } = useUser();
-  const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart, handleClearCart } = useCart();
-  const [ paymentMethod, setPaymentMethod ] = useState(" ");
-  const [ creditCards, setCreditCards ] = useState([]);
-  const [ addCardClicked, setAddCardClicked ] = useState(false);
-  const [ troco, setTroco ] = useState(" ");
+  const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart, clearCart } = useCart();
+  const [ paymentMethod, setPaymentMethod ] = useState("");
+  const [ troco, setTroco ] = useState("");
   const [qrValue, setQrValue] = useState("");
   const [show, setShow] = useState(false);
   const target = useRef(null);
 
-  const [formCard, setFormCard] = useState({
-        flag: "",
-        cardHolder: "",
-        cardNumber: "",
-        CVV: "",
-        expiryDate: "",
-  });
-
-  const handleInputChange = (event) => {
-    const { name } = event.target;
-      const { value } = event.target;
-      setFormCard((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    
-  };
-
-
+  
   useEffect(() => {
-    const fetchCards = async () => {
-      if (user) {
-        const userCards = await firestoreService.getUserCards(user.uid);
-        console.log(userCards);
-        setCreditCards(userCards);
-      }
-    };
+    console.log(payment);
+    console.log(paymentMethod);
 
-    fetchCards();
-
-    console.log(cart);
-
-  }, []);
-
-
-  const createCreditCard = async (event) => {
-    event.preventDefault()
-
-    if (!validateCard(formCard)) {
-      return;
-    }
-
-    try {
-      const new_creditCard = await firestoreService.addCreditCard(formCard);
-      if (new_creditCard){
-        setPayment("Cartão de Crédito no Aplicativo")
-        console.log("Cartão de crédito adicionado!");
-      }
-      
-    } catch (error) {
-      console.error("Erro ao adicionar cartão:", error);
-      
-    }
-
-  }
-
-  const validateCard = (cardData) => {
-    const { cardNumber, expiryDate, CVV, cardHolder } = cardData;
-  
-    if (!cardHolder || cardHolder.trim().length === 0) {
-      alert("Nome no cartão inválido.");
-      return false;
-    }
-  
-    const cardNumberRegex = /^[0-9]{13,19}$/;
-    if (!cardNumberRegex.test(cardNumber.replace(/\s/g, ""))) {
-      alert("Número do cartão inválido.");
-      return false;
-    }
-  
-    const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
-    if (!expiryRegex.test(expiryDate)) {
-      alert("Data de validade inválida.");
-      return false;
-    } else {
-      const [month, year] = expiryDate.split("/").map(Number);
-      const currentYear = new Date().getFullYear() % 100;
-      const currentMonth = new Date().getMonth() + 1;
-  
-      if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        alert("O cartão já expirou.");
-        return false;
-      }
-    }
-  
-    const cvvRegex = /^[0-9]{3,4}$/;
-    if (!cvvRegex.test(CVV)) {
-      alert("CVV inválido.");
-      return false;
-    }
-  
-    return true;
-  };
+  }, [payment, paymentMethod]);
 
   const validateChange = (change) => {
 
@@ -183,7 +95,7 @@ const CheckoutPage = () => {
       setCurrentOrder(orderRef.id);
   
       alert("Pedido realizado com sucesso!");
-      handleClearCart();
+      clearCart();
       navigate("/progress",  { replace: false });
 
     } catch (error) {
@@ -212,9 +124,16 @@ const CheckoutPage = () => {
         <FloatingLabel controlId="floatingPaymentMethod" label="Método de Pagamento">
             <Form.Select 
             name= "paymentMethod"
-            onChange={(e) => {setPaymentMethod(e.target.value)}}
+            onChange={(e) => {
+              setPaymentMethod(e.target.value);
+              setPayment("");
+              if (e.target.value === "cardInDelivery"){
+                setPayment("Cartão na Entrega");
+              }
+              
+            }}
             aria-label="Floating label select">
-              <option>Selecione a forma de pagamento</option>
+              <option value="">Selecione a forma de pagamento</option>
               <option name= "paymentMethod" value="creditCardApp">Cartão no Aplicativo</option>
               <option name= "paymentMethod" value="cardInDelivery">Cartão na Entrega</option>
               <option name= "paymentMethod" value="cash">Dinheiro</option>
@@ -227,123 +146,14 @@ const CheckoutPage = () => {
           paymentMethod === "creditCardApp" ?
           <>
 
-          { creditCards.length === 0 ?
-            <Container>
-              <span>Nenhum cartão adicionado.</span>
-            </Container>
-          : 
-          (
-          <FloatingLabel controlId="floatingPaymentMethod" label="Cartões Cadastrados">
-            <Form.Select 
-            name= "cardId"
-            onChange={(e) => {setPayment(e.target.value)}}
-            aria-label="Floating label select">
-              <option>Selecione o cartão</option>
-              { creditCards.map((card) => (
-                  <option name="cardId" key={card.id} value={card.id}>
-                  {card.flag} •••• {card.cardNumber ? card.cardNumber.slice(-4) : "XXXX"}
-                </option>
-              ))
-              }
-            </Form.Select>
-          </FloatingLabel>
-        )
-          }
+          <CreditCardComponent
+            isPayment={true}
+          ></CreditCardComponent>   
           
-          <div className="d-flex gap-2 mt-2 mb-3">
-            <Button variant="warning"
-                    onClick={() => setAddCardClicked(true)}
-            >Adicionar Cartão</Button>
-          </div>
-
-          { addCardClicked === true ?
-          <Card className="p-3">
-            <Form className="gap-2 mt-2 mb-3" onSubmit={createCreditCard}>
-              <Form.Group className="mb-3" controlId="formGroupName">
-                <Form.Label>Nome no Cartão</Form.Label>
-                <Form.Control 
-                onChange={handleInputChange}
-                name ="cardHolder"
-                type="text" 
-                placeholder="Insira o nome escrito no cartão"/>
-                <Form.Control.Feedback type="invalid">
-                  Insira o nome no cartão.
-               </Form.Control.Feedback>
-              </Form.Group>
-              <Row className="mb-3">
-                <Form.Group as={Col} xs={7} controlId="formGridNumber">
-                  <Form.Label>Número do Cartão</Form.Label>
-                  <Form.Control 
-                  onChange={(e) => {
-                    const formatted = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
-                    setFormCard({ ...formCard, cardNumber: formatted });
-                  }}
-                  name="cardNumber"
-                  type="text" 
-                  placeholder="•••• •••• •••• ••••" />
-                <Form.Control.Feedback type="invalid">
-                  Insira um número válido.
-               </Form.Control.Feedback>
-                </Form.Group>
-
-              <Form.Group as={Col} controlId="formGridFlag">
-                <Form.Label>Bandeira</Form.Label>
-                <Form.Control 
-                onChange={handleInputChange}
-                name="flag"
-                type="text" 
-                placeholder="Visa, etc" />
-              <Form.Control.Feedback type="invalid">
-                  Informe a bandeira do cartão.
-               </Form.Control.Feedback>
-              </Form.Group>
-              </Row>
-
-              <Row className="mb-3">
-              <Form.Group as={Col} controlId="formGridCVV">
-                <Form.Label>CVV</Form.Label>
-                <Form.Control
-                onChange={handleInputChange}
-                name="CVV"
-                type="text" 
-                placeholder="•••"/>
-                <Form.Control.Feedback type="invalid">
-                  Insira um CVV válido.
-               </Form.Control.Feedback>
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formGridExpiryDate">
-                <Form.Label>Data de Validade</Form.Label>
-                <Form.Control
-                  onChange={handleInputChange}
-                  name="expiryDate"
-                  type="text" 
-                  placeholder="XX/XX"/>
-                <Form.Control.Feedback type="invalid">
-                  Insira uma data válida.
-               </Form.Control.Feedback>
-              </Form.Group>
-              </Row>
-              <div className="d-flex mt-2 gap-2">
-              <Button 
-                variant="primary" 
-                type="submit">
-                Criar Cartão
-              </Button>
-              <Button variant="outline-secondary"
-                      onClick={() => setAddCardClicked(false)}>Cancelar</Button>
-              </div>
-            </Form>
-            </Card>
-
-            : " "
-          }
           </>
 
           : " "
         }
-
-
         
         {
           paymentMethod === "cash" ?
@@ -376,7 +186,7 @@ const CheckoutPage = () => {
         {
           paymentMethod === "cardInDelivery" ?
           <>
-          
+          <span className="text-muted">O entregador irá trazer a maquininha para o pagamento na entrega.</span>
           </>
 
           : " "
@@ -448,7 +258,12 @@ const CheckoutPage = () => {
           disabled={!payment}>Confirmar Pagamento</Button>
         <Button 
           className="fs-5"
-          variant="outline-danger">Cancelar</Button>
+          variant="outline-danger"
+          onClick={() => {
+            setPayment("");
+            setPaymentMethod("");
+            navigate("/home");
+          }}>Cancelar</Button>
       </div>
       </Container>
        </>
