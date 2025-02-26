@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from "../components/context/UserProvider"
-import { Container, ListGroup, Row, Col, Card, Form, InputGroup, Button } from 'react-bootstrap';
+import { Container, ListGroup, Row, Col, Card, Form, InputGroup, Button, FloatingLabel } from 'react-bootstrap';
 import { FaPen, FaKey, FaCreditCard, FaUserSlash } from "react-icons/fa";
 import { BsFillPersonFill, BsFillPersonLinesFill } from "react-icons/bs";
 import { TbMail, TbMailPlus } from "react-icons/tb";
@@ -8,13 +8,15 @@ import { MdEmail } from "react-icons/md";
 import { GoKey } from "react-icons/go";
 import CustomNavBar from '../components/NavBar';
 import FirestoreService from '../services/firestore';
+import CreditCardComponent from '../components/CreditCard';
 
 const firestoreService = new FirestoreService();
 
 const SettingsPage = () => {
-  const { user } = useUser();
+  const { user, userData } = useUser();
   const [ itemSelected, setItemSelected ] = useState(0);
   const [validated, setValidated] = useState(false);
+  const [ creditCards, setCreditCards ] = useState([]);
 
   const [formData, setFormData] = useState({
       name: "",
@@ -24,6 +26,20 @@ const SettingsPage = () => {
       password: "",
       passwordConfirm: "",
     });
+
+    useEffect(() => {
+        const fetchCards = async () => {
+          if (user) {
+            const userCards = await firestoreService.getUserCards(user.uid);
+            console.log(userCards);
+            setCreditCards(userCards);
+          }
+        };
+    
+        fetchCards();
+    
+      }, []);
+    
 
   const handleInputChange = (event) => {
     const { name } = event.target;
@@ -116,6 +132,17 @@ const SettingsPage = () => {
 
   };
 
+  const getCreditCard = async (cardId) => {
+    try {
+      await firestoreService.getCredit
+      alert("A senha foi alterada com sucesso!");
+    } catch (error) {
+      alert(error.message);
+    }
+
+  };
+  
+
     return (
       <>
       <CustomNavBar></CustomNavBar>
@@ -136,6 +163,8 @@ const SettingsPage = () => {
 
         <Col xs={9}>
         { itemSelected === 0 ?
+
+
 
            <Card>
            <Card.Body>
@@ -300,6 +329,17 @@ const SettingsPage = () => {
           </Card.Text>
           </Card.Body>
           </Card>
+
+          : " "
+        }
+
+
+        { itemSelected === 3 ?
+
+          <>
+            <CreditCardComponent
+            isPayment={false}></CreditCardComponent>
+          </>
 
           : " "
         }
