@@ -8,12 +8,15 @@ import { MdEmail } from "react-icons/md";
 import { GoKey } from "react-icons/go";
 import CustomNavBar from '../components/NavBar';
 import FirestoreService from '../services/firestore';
+import { getAuth, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "firebase/auth";
 import CreditCardComponent from '../components/CreditCard';
+import { useNavigate } from 'react-router-dom';
 
 const firestoreService = new FirestoreService();
 
 const SettingsPage = () => {
   const { user, userData } = useUser();
+  const navigate = useNavigate();
   const [ itemSelected, setItemSelected ] = useState(0);
   const [validated, setValidated] = useState(false);
   const [ creditCards, setCreditCards ] = useState([]);
@@ -75,9 +78,20 @@ const SettingsPage = () => {
       return;
       
     } else {
+      const data = {
+        name: formData.name,
+        lastName: formData.lastName
+      }
+
+      if (formData.lastName === ""){
+        data.lastName = userData.lastName;
+
+      } else if (formData.name === ""){
+        data.name = userData.name;
+      }
 
       try {
-        await firestoreService.updateUserNameLastName(formData.name, formData.lastName);
+        await firestoreService.updateUserNameLastName(data.name, data.lastName);
         alert("O nome e sobrenome foram alterados com sucesso!");
       } catch (error) {
         alert(error.message);
@@ -132,16 +146,37 @@ const SettingsPage = () => {
 
   };
 
-  const getCreditCard = async (cardId) => {
-    try {
-      await firestoreService.getCredit
-      alert("A senha foi alterada com sucesso!");
-    } catch (error) {
-      alert(error.message);
+  const handleDeleteAccount = async (event) => {
+    event.preventDefault();
+
+    setValidated(true);
+
+    if (formData.password !== formData.passwordConfirm) {
+      event.stopPropagation();
+      return;
+
+    } 
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (!user) {
+      alert("Usuário não autenticado.");
+      return;
     }
 
+    const credential = EmailAuthProvider.credential(user.email, formData.password);
+
+      try {
+        await reauthenticateWithCredential(user, credential);
+        await firestoreService.deleteUserAccount();
+        alert("Sua conta foi deletada.");
+        navigate("/");
+      } catch (error) {
+        alert(error.message);
+      }
+    
+
   };
-  
 
     return (
       <>
@@ -170,7 +205,7 @@ const SettingsPage = () => {
            <Card.Body>
            <Card.Title className="mb-3">Alterar Nome ou Sobrenome</Card.Title>
            <Card.Text>
-          <Form className="mb-1" noValidate validated={validated}>
+          <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitName}>
             <Row>
               <Col>
            <Form.Group>
@@ -181,6 +216,7 @@ const SettingsPage = () => {
                   placeholder="Insira o novo nome"
                   aria-describedby="nameInput"
                   required
+                  onChange={handleInputChange}
                 />
                 <Form.Control.Feedback type="invalid">
                   Você precisa inserir um nome.
@@ -197,6 +233,7 @@ const SettingsPage = () => {
                   placeholder="Insira o novo sobrenome"
                   aria-describedby="lastNameInput"
                   required
+                  onChange={handleInputChange}
                 />
                 <Form.Control.Feedback type="invalid">
                   Você precisa inserir um sobrenome.
@@ -226,7 +263,7 @@ const SettingsPage = () => {
           <Card.Body>
             <Card.Title className="mb-3">Alterar E-mail</Card.Title>
             <Card.Text>
-          <Form className="mb-1" noValidate validated={validated}>
+          <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitEmail}>
             <Row>
               <Col>
             <Form.Group>
@@ -237,6 +274,7 @@ const SettingsPage = () => {
                   placeholder="Insira o novo e-mail"
                   aria-describedby="emailInput"
                   required
+                  onChange={handleInputChange}
                 />
                 <Form.Control.Feedback type="invalid">
                   Insira um e-mail válido.
@@ -253,6 +291,7 @@ const SettingsPage = () => {
                     placeholder="Confirme o novo e-mail"
                     aria-describedby="emailConfirmInput"
                     required
+                    onChange={handleInputChange}
                   />
                 <Form.Control.Feedback type="invalid">
                   Os e-mails precisam ser iguais.
@@ -283,7 +322,7 @@ const SettingsPage = () => {
               <Card.Title>Alterar Senha</Card.Title>
               <Card.Subtitle className="mb-3 text-muted">Sua senha deve ter pelo menos 8 caracteres e conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial.</Card.Subtitle>
               <Card.Text>
-            <Form className="mb-1" noValidate validated={validated}>
+            <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitPassword}>
               <Row>
                 <Col>
                 <Form.Group>
@@ -294,6 +333,7 @@ const SettingsPage = () => {
                       placeholder="Insira a nova senha"
                       aria-describedby="passwordInput"
                       required
+                      onChange={handleInputChange}
                     />
                   <Form.Control.Feedback type="invalid">
                     Insira uma senha válida.
@@ -310,6 +350,7 @@ const SettingsPage = () => {
                       placeholder="Confirme a nova senha"
                       aria-describedby="passwordConfirmInput"
                       required
+                      onChange={handleInputChange}
                     />
                   <Form.Control.Feedback type="invalid">
                     As senhas precisam ser iguais.
@@ -351,7 +392,7 @@ const SettingsPage = () => {
               <Card.Title>Deletar Conta</Card.Title>
               <Card.Subtitle className="mb-3 text-muted">Uma vez deletada, você perderá o acesso a sua conta e aos seus pedidos.</Card.Subtitle>
               <Card.Text>
-            <Form className="mb-1" noValidate validated={validated}>
+            <Form className="mb-1" noValidate validated={validated} onSubmit={handleDeleteAccount}>
           <Row>
             <Col>
                 <Form.Group>
@@ -362,6 +403,7 @@ const SettingsPage = () => {
                       placeholder="Insira sua senha"
                       aria-describedby="passwordInput"
                       required
+                      onChange={handleInputChange}
                     />
                   <Form.Control.Feedback type="invalid">
                     Insira uma senha válida.
@@ -378,6 +420,7 @@ const SettingsPage = () => {
                         placeholder="Confirme sua senha"
                         aria-describedby="passwordConfirmInput"
                         required
+                        onChange={handleInputChange}
                       />
                   <Form.Control.Feedback type="invalid">
                     As senhas precisam ser iguais.
