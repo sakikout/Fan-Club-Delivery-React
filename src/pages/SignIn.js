@@ -18,6 +18,13 @@ function SignIn(){
       email: "",
       senha: "",
     });
+
+    const [formErrors, setFormErrors] = useState({
+      nome: "",
+      sobrenome: "",
+      email: "",
+      senha: "",
+    });
       
     const handleInputChange = (event) => {
       const { name } = event.target;
@@ -26,7 +33,7 @@ function SignIn(){
           ...prevData,
           [name]: value,
         }));
-      
+        validateField(name, value);
     };
   
     const handleSubmit = async (event) => {
@@ -69,6 +76,33 @@ function SignIn(){
              /\d/.test(password) && 
              /[@$!%*?&]/.test(password); 
     };
+
+    const validateField = (name, value) => {
+      let error = "";
+      
+      switch (name) {
+        case "nome":
+          if (!value.trim()) error = "Não pode estar vazio! Insira seu nome.";
+          break;
+    
+        case "sobrenome":
+          if (!value.trim()) error = "Não pode estar vazio! Insira o seu sobrenome.";
+          break;
+    
+        case "email":
+          if (!isValidEmail(value)) error = "Insira um e-mail válido.";
+          break;
+    
+        case "senha":
+          if (!isValidPassword(value)) error = "Insira uma senha válida.";
+          break;
+    
+        default:
+          break;
+      }
+    
+      setFormErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+    };
     
   
     return (
@@ -89,9 +123,10 @@ function SignIn(){
             name = "nome"
             placeholder="Digite seu nome" 
             onChange={handleInputChange}
-            required/>
+            required
+            isInvalid={!!formErrors.nome}/>
             <Form.Control.Feedback type="invalid">
-              Não pode estar vazio!
+            {formErrors.nome}
             </Form.Control.Feedback>
         </Form.Group>
 
@@ -100,9 +135,10 @@ function SignIn(){
             name = "sobrenome"
             placeholder="Digite seu sobrenome" 
             onChange={handleInputChange}
-            required/>
+            required
+            isInvalid={!!formErrors.sobrenome}/>
             <Form.Control.Feedback type="invalid">
-              Não pode estar vazio!
+              {formErrors.sobrenome}
             </Form.Control.Feedback>
         </Form.Group>
         <Form.Group className="mb-2" controlId="formGridEmail">
@@ -113,9 +149,10 @@ function SignIn(){
             type="email" 
             placeholder="SeuEmail@email.com" 
             onChange={handleInputChange}
-            required/>
+            required
+            isInvalid={!!formErrors.email}/>
             <Form.Control.Feedback type="invalid">
-              Insira um e-mail válido.
+            {formErrors.email}
             </Form.Control.Feedback>
             </InputGroup>
         </Form.Group>
@@ -128,12 +165,13 @@ function SignIn(){
             type="password" 
             placeholder="Digite sua senha" 
             onChange={handleInputChange}
-            required/>
+            required
+            isInvalid={!!formErrors.senha}/>
             <Form.Text id="passwordHelpBlock" muted>
             Sua senha deve ter pelo menos 8 caracteres e conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial. 
             </Form.Text>
             <Form.Control.Feedback type="invalid">
-              Insira uma senha válida.
+            {formErrors.senha}
             </Form.Control.Feedback>
             </InputGroup>
         </Form.Group>
