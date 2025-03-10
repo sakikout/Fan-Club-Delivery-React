@@ -14,6 +14,9 @@ const DeliveryProgress = () => {
   const { user } = useUser();
   const { currentOrder } = useCart();
   const [ orders, setOrders] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -21,14 +24,28 @@ const DeliveryProgress = () => {
         const userOrder = await firestoreService.getUserOrders();
         if (userOrder) {
           const activeOrders = userOrder.filter(order => order.status !== "Finalizado");
-          console.log(activeOrders);
           setOrders(activeOrders);
         }
       }
     };
-
     fetchOrder();
-  }, [user, currentOrder]);
+
+    if (orders.length > 0) {
+      const unsubscribe = firestoreService.getMessages(orders[0].id, (msgs) => {
+        setMessages(msgs);
+      });
+  
+      return () => unsubscribe();
+    }
+
+  }, [user, currentOrder, orders]);
+
+  const handleSendMessage = async () => {
+    if (newMessage.trim() === "") return;
+  
+    await firestoreService.sendMessage(orders[0].id, newMessage, "user");
+    setNewMessage(" "); 
+  };
 
   return (
     <>
@@ -65,8 +82,12 @@ const DeliveryProgress = () => {
                           </div>
                         </Row>
                     </Card.Header>
-                    <Card.Body>
-
+                    <Card.Body className="chat-body">
+                    {messages.map((msg) => (
+                      <div key={msg.id} className={msg.sender === "user" ? "message user" : "message restaurant"}>
+                        <p>{msg.text}</p>
+                      </div>
+                    ))}
                     </Card.Body>
                     <Card.Footer>
                       <div className="mb-1 mt-1">
@@ -76,8 +97,9 @@ const DeliveryProgress = () => {
                         type="text"
                         placeholder="Digite aqui sua mensagem"
                         aria-describedby="messageInput"
+                        onChange={(e) => setNewMessage(e.target.value)}
                       />
-                    <Button variant="warning" id="messageInput">
+                    <Button variant="warning" id="messageInput" type="submit" onClick={() => handleSendMessage()}>
                     <IoMdSend />
                     </Button>
                     </InputGroup>
