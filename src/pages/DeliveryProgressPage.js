@@ -34,7 +34,8 @@ const DeliveryProgress = () => {
     <>
       <CustomNavBar />
       <Container className="gap-2 mt-3 mb-3">
-        {orders ? (
+      <p className="fw-bold fs-4">Pedidos Em Processamento</p>
+        {orders.length > 0 ? (
           <Tabs 
             defaultActiveKey={orders[0]} 
             className="mb-2 fw-bold fs-5">
