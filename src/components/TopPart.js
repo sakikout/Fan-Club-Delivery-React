@@ -38,7 +38,7 @@ function TopPart(props){
                     }
                 }
             } catch (error) {
-                alert("Erro ao carregar regiões: " + error.message);
+                console.alert("Erro ao carregar regiões: " + error.message);
             }
         }
     
@@ -54,11 +54,11 @@ function TopPart(props){
             );
             
             if (region_updated){
-                alert("Endereço atualizado!");
+                console.alert("Endereço atualizado!");
             }
            
         } catch (error) {
-            alert(error.message);
+            console.alert(error.message);
         }
 
     }
@@ -77,7 +77,7 @@ function TopPart(props){
             name="address"
             id="address"
             onChange={(e => setAddress(e.target.value))}
-            placeholder='Insira sua localização atual'
+            placeholder='Insira sua rua e número'
         />
          </InputGroup>
         {   userData ?
@@ -126,6 +126,9 @@ function TopPart(props){
             <ListGroup.Item>Tempo de Entrega: <span className="fw-bold fs-6">{deliveryTime}</span></ListGroup.Item>
             <ListGroup.Item>Tempo de Preparo: <span className="fw-bold fs-6">{prepTimeString}</span></ListGroup.Item>
         </ListGroup>
+        { feePrice ? 
+        <></>
+        : <p className="text-muted p-1">Você precisa selecionar uma região para que possamos informar o tempo de preparo, a taxa e o tempo de entrega!</p>}
         </div>
         </Col>
       </Row>
