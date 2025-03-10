@@ -78,7 +78,7 @@ const ReceiptModal = (props) => {
             }
         </Modal.Body>
         <Modal.Footer >
-        <span>Algum problema?</span> <a className="fw-bold text_link" onClick={() => {}}>Falar com o Restaurante!</a>
+        <span>Gostou do pedido?</span> <a className="fw-bold text_link" onClick={() => {}}>Deixe uma avaliação!</a>
         </Modal.Footer>
         </Modal>
     </>
