@@ -19,7 +19,6 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const [ itemSelected, setItemSelected ] = useState(0);
   const [validated, setValidated] = useState(false);
-  const [ creditCards, setCreditCards ] = useState([]);
 
   const [formData, setFormData] = useState({
       name: "",
@@ -31,15 +30,6 @@ const SettingsPage = () => {
     });
 
     useEffect(() => {
-        const fetchCards = async () => {
-          if (user) {
-            const userCards = await firestoreService.getUserCards(user.uid);
-            console.log(userCards);
-            setCreditCards(userCards);
-          }
-        };
-    
-        fetchCards();
     
       }, []);
     
