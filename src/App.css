@@ -111,6 +111,32 @@ body {
   margin: 10px;
 }
 
+.chat-body {
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  max-width: 80%;
+  width: 500px;
+}
+
+.user {
+  background-color: #ffcc00;
+  align-self: flex-end;
+}
+
+.restaurant {
+  background-color: #e1e1e1;
+  align-self: flex-start;
+}
+
+
 .footer-logo{
   text-decoration: none;
   color: #ffffff;
@@ -136,9 +162,15 @@ body {
 }
 
 .app-footer {
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.2), 4px 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 2rem;
   background-color: #121212;
 }
+
+.copyright {
+  color: #646464;
+}
+
 
 
 @keyframes App-logo-spin {
