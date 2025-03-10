@@ -111,6 +111,36 @@ body {
   margin: 10px;
 }
 
+.footer-logo{
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.no-decoration {
+  text-decoration: none;
+  color:#121212;
+}
+
+.menu-text {
+  text-decoration: none;
+  color: #888888;
+}
+
+.menu-text:hover {
+  cursor: pointer;
+}
+
+.footer-icons {
+  text-decoration: none;
+  color: #f5c030;
+}
+
+.app-footer {
+  padding: 2rem;
+  background-color: #121212;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
