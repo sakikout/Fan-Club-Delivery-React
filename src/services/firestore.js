@@ -1,6 +1,6 @@
 import { getFirestore, collection, addDoc, 
         getDocs, doc, getDoc, updateDoc, deleteDoc, setDoc,
-        query, where, orderBy, arrayUnion } from 'firebase/firestore';
+        query, where, orderBy, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { getAuth, updatePassword } from 'firebase/auth';
 
 class FirestoreService {
@@ -247,6 +247,32 @@ class FirestoreService {
       console.error("Erro ao buscar regiões no catálogo:", e);
       return [];
     }
+  }
+
+  getMessages(orderId, callback) {
+    const messagesRef = collection(this.db, "chats", orderId, "messages");
+    const q = query(messagesRef, orderBy("timestamp"));
+
+    return onSnapshot(q, (querySnapshot) => {
+      const messages = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(messages);
+    });
+  }
+
+  async sendMessage(orderId, text, sender) {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+
+    const messagesRef = collection(this.db, "chats", orderId, "messages");
+    await addDoc(messagesRef, {
+      userId: user.uid,
+      text,
+      sender,
+      timestamp: Date.now()
+    });
   }
 
 }
