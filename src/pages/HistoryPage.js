@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from "../components/context/UserProvider"
 import FirestoreService from "../services/firestore"
 import { Container, Row, Col } from 'react-bootstrap';
 import OrderTile from '../components/OrderTile';
