@@ -14,7 +14,7 @@ function CustomNavBar() {
 
   return (
     <>
-      <Navbar className="bg-dark shadow-sm" expand="lg" variant="dark" fixed="top">
+      <Navbar className="nav-custom shadow-sm" expand="lg" variant="dark" fixed="top">
         <Container>
           <Navbar.Brand className="fs-4 fw-bold">Fã Clube Delivery</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
