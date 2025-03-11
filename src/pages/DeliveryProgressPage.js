@@ -12,10 +12,10 @@ const firestoreService = new FirestoreService();
 
 const DeliveryProgress = () => {
   const { user } = useUser();
-  const { currentOrder } = useCart();
   const [ orders, setOrders] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [ messages, setMessages ] = useState([]);
+  const [ newMessage, setNewMessage ] = useState("");
+  const [ activeOrder, setActiveOrder ] = useState("");
 
 
   useEffect(() => {
@@ -28,22 +28,28 @@ const DeliveryProgress = () => {
         }
       }
     };
-    fetchOrder();
 
+    fetchOrder();
     if (orders.length > 0) {
-      const unsubscribe = firestoreService.getMessages(orders[0].id, (msgs) => {
-        setMessages(msgs);
-      });
+      if (activeOrder === "") setActiveOrder(orders[0].id);
+      try {
+        const unsubscribe = firestoreService.getMessages(activeOrder, (msgs) => {
+          setMessages(msgs);
+        });
   
-      return () => unsubscribe();
+        return () => unsubscribe();
+      } catch (error) {
+        console.log(error.message);
+      }
+     
     }
 
-  }, [user, currentOrder, orders]);
+  }, [user, activeOrder, orders]);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === "") return;
   
-    await firestoreService.sendMessage(orders[0].id, newMessage, "user");
+    await firestoreService.sendMessage(activeOrder, newMessage, "user");
     setNewMessage(" "); 
   };
 
@@ -54,13 +60,16 @@ const DeliveryProgress = () => {
       <p className="fw-bold fs-4">Pedidos Em Processamento</p>
         {orders.length > 0 ? (
           <Tabs 
-            defaultActiveKey={orders[0]} 
-            className="mb-2 fw-bold fs-5">
+            activeKey={activeOrder}
+            className="mb-2 fw-bold fs-5"
+            onSelect={(orderId) => setActiveOrder(orderId)}
+            >
               {orders.map((order, index) => (
                 <Tab 
                   eventKey={order.id} 
                   title={order.order.orderName} 
-                  key={order.id}>
+                  key={order.id}
+                  >
                   <Row>
                     { orders
                       .filter((orderCurrent) => orderCurrent.id === order.id)
