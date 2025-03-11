@@ -215,11 +215,11 @@ class FirestoreService {
   
 
 
-  async updateUserAddress(newAddress, regionSelected) {
+  async updateUserAddress(newAddress, regionSelected, complement) {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    await updateDoc(doc(this.db, 'users', user.uid), { address: newAddress, regionId: regionSelected });
+    await updateDoc(doc(this.db, 'users', user.uid), { address: newAddress, regionId: regionSelected, complement: complement });
     console.log("Endereço atualizado com sucesso!");
   }
 
@@ -250,6 +250,11 @@ class FirestoreService {
   }
 
   getMessages(orderId, callback) {
+    if (!orderId) throw new Error("Pedido não foi informado.");
+
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+    
     const messagesRef = collection(this.db, "chats", orderId, "messages");
     const q = query(messagesRef, orderBy("timestamp"));
 
@@ -263,6 +268,8 @@ class FirestoreService {
   }
 
   async sendMessage(orderId, text, sender) {
+    if (!orderId || !text) throw new Error("Pedido não foi informado ou mensagem está vazia.");
+
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
