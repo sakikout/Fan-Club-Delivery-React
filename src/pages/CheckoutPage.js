@@ -63,6 +63,7 @@ const CheckoutPage = () => {
 
       const total = subtotal + feePrice;
       const address = userData.address;
+      const complement = userData?.complement;
       const orderName = cart.map(item => item.name).join(" + ");
 
   
@@ -83,7 +84,8 @@ const CheckoutPage = () => {
         total,
         paymentMethod: payment,
         deliveryTime,
-        address
+        address,
+        complement
       };
   
       if (paymentMethod === "Dinheiro") {
@@ -96,6 +98,9 @@ const CheckoutPage = () => {
   
       alert("Pedido realizado com sucesso!");
       clearCart();
+      
+      const first_message = `Olá, ${userData.displayName}! Nós recebemos o seu pedido e iremos te atualizar por meio desta conversa!`;
+      await firestoreService.sendMessage(orderRef.id, first_message, "restaurant");
       navigate("/progress",  { replace: false });
 
     } catch (error) {
