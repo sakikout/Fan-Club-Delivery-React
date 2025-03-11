@@ -32,21 +32,21 @@ function FooterComponent(){
       </Modal>
 
 
-    <footer className="app-footer mt-3">
+    <footer className="app-footer mt-5">
      <Container>
         <Row className="justify-content-center">
         <Col className="md-12 text-center">
-        <h4 className="footer-heading fw-bold mt-3">
+        <h5 className="footer-heading fw-bold mt-3">
             <a href="#" className="footer-logo">Fã Clube Delivery</a>
-        </h4>
+        </h5>
         <p className="menu">
             <a href="#" className="menu-text m-1">Home</a>
             <a onClick={handleShow} className="menu-text m-1">About</a>
         </p>
 
         <ul className="footer-social list-unstyled d-flex justify-content-center align-items-center">
-            <li className="m-1"><a href="https://github.com/sakikout" data-toggle="tooltip" data-placement="top" title data-original-title="Github" className="footer-icons"><FaGithub size={25}></FaGithub></a></li>
-            <li className="m-1"><a href="https://www.linkedin.com/in/beatriz-evelyn-dalfior-994b04209/" data-toggle="tooltip" data-placement="top" title data-original-title="LinkedIn" className="footer-icons"><FaLinkedin size={25}></FaLinkedin></a></li>
+            <li className="m-1"><a href="https://github.com/sakikout" target="_blank" data-toggle="tooltip" data-placement="top" title data-original-title="Github" className="footer-icons" rel="noreferrer"><FaGithub size={25}></FaGithub></a></li>
+            <li className="m-1"><a href="https://www.linkedin.com/in/beatriz-evelyn-dalfior-994b04209/" target="_blank" data-toggle="tooltip" data-placement="top" title data-original-title="LinkedIn" className="footer-icons" rel="noreferrer"><FaLinkedin size={25}></FaLinkedin></a></li>
         </ul>
 
         </Col>
