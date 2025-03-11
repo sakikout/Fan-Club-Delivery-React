@@ -5,7 +5,6 @@ import { Container, Row, Col } from 'react-bootstrap';
 import CustomNavBar from '../components/NavBar';
 import FoodPage from './FoodPage';
 import TopPart from '../components/TopPart';
-import FooterComponent from '../components/Footer';
 
 
 const Home = () => {
@@ -15,7 +14,7 @@ const Home = () => {
   useEffect(() => {
     console.log(user);
     console.log(userData)
-  }, []);
+  }, [user, userData]);
 
     return (
       <>
@@ -26,7 +25,6 @@ const Home = () => {
         <TopPart address={user.address}></TopPart>
         <FoodPage></FoodPage>
        </Container>
-       <FooterComponent></FooterComponent>
        </>
        : navigate("/")}
        </>
