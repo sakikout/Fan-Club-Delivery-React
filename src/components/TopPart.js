@@ -12,11 +12,15 @@ function TopPart(props){
     const { userData } = useUser();
     const { feePrice, setFeePrice, setDeliveryTime } = useCart();
     const [ addressInput, setAddress ] = useState("");
+    const [ complement, setComplement ] = useState("");
+    const [ addressError, setAddressError ] = useState(false);
+    const [ regionError, setRegionError ] = useState(false);
     const [ regions, setRegions ] = useState([]);
     const [ selectedRegion, setSelectedRegion ] = useState("");
     const [ deliveryTime, setDeliveryTimeString ] = useState("");
     const [ prepTimeString, setPrepTimeString ] = useState("");
     const [ userRegion, setUserRegion ]= useState("");
+    const [ validated, setValidated ] = useState(true);
 
     useEffect(() => {
         async function fetchData() {
@@ -43,19 +47,52 @@ function TopPart(props){
         }
     
         fetchData();
-    }, [userData]);
+    }, [setDeliveryTime, setFeePrice, userData]);
 
+
+    const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    
+    if (name === "address") {
+        setAddress(value);
+        const enderecoRegex = /^(Rua|Avenida)\s+[A-Za-zÀ-ÖØ-öø-ÿ\s]+,\s*\d+$/i;
+        if (!enderecoRegex.test(value.trim())) {
+            setAddressError(true);
+        } else {
+            setAddressError(false);
+        }
+    } 
+    
+    if (name === "regionId"){
+        setSelectedRegion(value);
+
+    }
+
+    setValidated(!addressInput.trim() || !selectedRegion || selectedRegion === "-1");
+    
+    };
+    
 
     const handleChangeAddress = async () => {
+        if (!addressInput.trim()) {
+            return alert("Por favor, preencha um endereço válido.");
+        }
+
+        if (!selectedRegion || selectedRegion === "-1"){
+            return alert("Selecione uma região!");
+        }
+
         try {
             const region_updated = await firestoreService.updateUserAddress(
              addressInput,
-             selectedRegion
+             selectedRegion,
+             complement
             );
             
-            if (region_updated){
-                console.alert("Endereço atualizado!");
-            }
+            console.alert("Endereço atualizado!");
+
+            setRegionError(false);
+            setAddressError(false);
            
         } catch (error) {
             console.alert(error.message);
@@ -68,18 +105,24 @@ function TopPart(props){
       <Container className="gap-2 mt-3 mb-3">
       <Row>
         <Col xs={6}>
-        <Form.Label className="fw-bold fs-4" 
-        htmlFor="address">Endereço de Entrega</Form.Label>
+        <p className="fw-bold fs-4">Endereço de Entrega</p>
+        <Row>
+        <Form.Group as={Col} xs={9}>
         <InputGroup hasValidation>
          <InputGroup.Text><FaMapMarkerAlt/></InputGroup.Text>
         <Form.Control
             type="text"
             name="address"
             id="address"
-            onChange={(e => setAddress(e.target.value))}
+            onChange={handleInputChange}
             placeholder='Insira sua rua e número'
+            isInvalid={addressError}
         />
          </InputGroup>
+        <Form.Text className="m-1" id="passwordHelpBlock" muted>
+         Deve seguir o formato: Rua (ou Avenida) de Tal, 111
+        </Form.Text>
+        <br></br>
         {   userData ?
         
         <Form.Text 
@@ -89,14 +132,31 @@ function TopPart(props){
         : " "
 
         }
+        <Form.Control.Feedback type="invalid">
+            Informe um endereço válido.
+        </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group as={Col} xs={3}>
+        <Form.Control
+            type="text"
+            name="complement"
+            id="complement"
+            onChange={(e) => setComplement(e.target.value)}
+            placeholder='Apto e nº, Casa'
+        />
+        </Form.Group>
+        </Row>
+    
       <div className="gap-2 mt-2"> 
       <FloatingLabel controlId="floatingSelectPessoa" label="Região">
             <Form.Select 
                 name = "regionId"
                 aria-label="Floating label select"
-                onChange={(e) => {setSelectedRegion(e.target.value)}}
-                required>
-                <option>Selecione uma região</option>
+                onChange={handleInputChange}
+                required
+                isInvalid={regionError}>
+                <option name = "regionId" 
+                        value={-1}>Selecione uma região</option>
                 { regions.map((region) => (
                     <option name = "regionId"
                             key={region.id} 
@@ -104,13 +164,17 @@ function TopPart(props){
                         {region.name}
                     </option>
                 ))}
+            <Form.Control.Feedback type="invalid">
+              Selecione uma região!
+            </Form.Control.Feedback>
             </Form.Select>
         </FloatingLabel>
         </div>
         <div className="d-flex gap-2 mt-2 mb-3">        
         <Button className="fw-bold fs-6"
                 variant="warning"
-                onClick={handleChangeAddress}>
+                onClick={handleChangeAddress}
+                disabled={validated}>
             Salvar Endereço
         </Button>
         </div>
@@ -121,7 +185,7 @@ function TopPart(props){
         <span className="fw-bold fs-4" >Informações de Entrega</span> 
         <ListGroup>
             { feePrice ? 
-            <ListGroup.Item>Taxa de Entrega: <span className="fw-bold fs-6">R${feePrice.toFixed(2)}</span></ListGroup.Item>
+            <ListGroup.Item>Taxa de Entrega: <span className="fw-bold fs-6">R${feePrice}</span></ListGroup.Item>
             : " "} 
             <ListGroup.Item>Tempo de Entrega: <span className="fw-bold fs-6">{deliveryTime}</span></ListGroup.Item>
             <ListGroup.Item>Tempo de Preparo: <span className="fw-bold fs-6">{prepTimeString}</span></ListGroup.Item>
