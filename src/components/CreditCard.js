@@ -49,7 +49,7 @@ const CreditCardComponent = (props) => {
     };
 
     fetchCards();
-  }, [creditCards]);
+  }, [creditCards, user]);
 
 
   const createCreditCard = async (event) => {
@@ -103,7 +103,7 @@ const CreditCardComponent = (props) => {
         break;
   
       case "cardNumber":
-        if (!/^[0-9]{13,19}$/.test(value.replace(/\s/g, ""))) {
+        if (!/^[0-9]{13,24}$/.test(value.replace(/\s/g, ""))) {
           error = "Número de cartão inválido.";
         }
         break;
