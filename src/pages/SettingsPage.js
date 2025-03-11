@@ -18,7 +18,6 @@ const SettingsPage = () => {
   const { user, userData } = useUser();
   const navigate = useNavigate();
   const [ itemSelected, setItemSelected ] = useState(0);
-  const [validated, setValidated] = useState(false);
 
   const [formData, setFormData] = useState({
       name: "",
@@ -36,7 +35,7 @@ const SettingsPage = () => {
 
   const handleInputChange = (event) => {
     const { name } = event.target;
-      const { value } = event.target;
+    const { value } = event.target;
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -61,8 +60,6 @@ const SettingsPage = () => {
     event.preventDefault();
     const form = event.currentTarget;
 
-    setValidated(true);
-
     if (form.checkValidity() === false) {
       event.stopPropagation();
       return;
@@ -83,6 +80,13 @@ const SettingsPage = () => {
       try {
         await firestoreService.updateUserNameLastName(data.name, data.lastName);
         alert("O nome e sobrenome foram alterados com sucesso!");
+
+        setFormData((prevData) => ({
+          ...prevData,
+          name: "",
+          lastName: ""
+        }));
+
       } catch (error) {
         alert(error.message);
       }
@@ -94,8 +98,6 @@ const SettingsPage = () => {
     event.preventDefault();
     const form = event.currentTarget;
 
-    setValidated(true);
-
     if (form.checkValidity() === false || !isValidEmail(formData.email) || formData.email !== formData.emailConfirm) {
       event.stopPropagation();
       return;
@@ -105,6 +107,13 @@ const SettingsPage = () => {
       try {
         await firestoreService.updateUserEmail(formData.email);
         alert("O e-mail foi alterado com sucesso!");
+
+        setFormData((prevData) => ({
+          ...prevData,
+          email: "",
+          emailConfirm: ""
+        }));
+
       } catch (error) {
         alert(error.message);
       }
@@ -115,8 +124,6 @@ const SettingsPage = () => {
   const handleSubmitPassword = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
-
-    setValidated(true);
 
     if (form.checkValidity() === false || !isValidPassword(formData.password) || formData.password !== formData.passwordConfirm) {
       event.stopPropagation();
@@ -129,6 +136,13 @@ const SettingsPage = () => {
           formData.password
         );
         alert("A senha foi alterada com sucesso!");
+
+        setFormData((prevData) => ({
+          ...prevData,
+          password: "",
+          passwordConfirm: ""
+        }));
+
       } catch (error) {
         alert(error.message);
       }
@@ -138,8 +152,6 @@ const SettingsPage = () => {
 
   const handleDeleteAccount = async (event) => {
     event.preventDefault();
-
-    setValidated(true);
 
     if (formData.password !== formData.passwordConfirm) {
       event.stopPropagation();
@@ -195,7 +207,7 @@ const SettingsPage = () => {
            <Card.Body>
            <Card.Title className="mb-3">Alterar Nome ou Sobrenome</Card.Title>
            <Card.Text>
-          <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitName}>
+          <Form className="mb-1" onSubmit={handleSubmitName}>
             <Row>
               <Col>
            <Form.Group>
@@ -207,6 +219,7 @@ const SettingsPage = () => {
                   aria-describedby="nameInput"
                   required
                   onChange={handleInputChange}
+                  isInvalid={!formData.name.trim()}
                 />
                 <Form.Control.Feedback type="invalid">
                   Você precisa inserir um nome.
@@ -224,6 +237,7 @@ const SettingsPage = () => {
                   aria-describedby="lastNameInput"
                   required
                   onChange={handleInputChange}
+                  isInvalid={!formData.lastName.trim()}
                 />
                 <Form.Control.Feedback type="invalid">
                   Você precisa inserir um sobrenome.
@@ -232,7 +246,7 @@ const SettingsPage = () => {
             </Form.Group>
             </Col>
             <Col>
-            <Button variant="warning">
+            <Button variant="warning" type="submit">
               Confirmar
             </Button>
             </Col>
@@ -253,7 +267,7 @@ const SettingsPage = () => {
           <Card.Body>
             <Card.Title className="mb-3">Alterar E-mail</Card.Title>
             <Card.Text>
-          <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitEmail}>
+          <Form className="mb-1" onSubmit={handleSubmitEmail}>
             <Row>
               <Col>
             <Form.Group>
@@ -265,6 +279,7 @@ const SettingsPage = () => {
                   aria-describedby="emailInput"
                   required
                   onChange={handleInputChange}
+                  isInvalid={!isValidEmail(formData.email)}
                 />
                 <Form.Control.Feedback type="invalid">
                   Insira um e-mail válido.
@@ -282,6 +297,7 @@ const SettingsPage = () => {
                     aria-describedby="emailConfirmInput"
                     required
                     onChange={handleInputChange}
+                    isInvalid={formData.email !== formData.emailConfirm}
                   />
                 <Form.Control.Feedback type="invalid">
                   Os e-mails precisam ser iguais.
@@ -290,7 +306,7 @@ const SettingsPage = () => {
             </Form.Group>
               </Col>
               <Col>
-              <Button variant="warning">
+              <Button variant="warning" type="submit">
                   Confirmar
               </Button>
               </Col>
@@ -312,7 +328,7 @@ const SettingsPage = () => {
               <Card.Title>Alterar Senha</Card.Title>
               <Card.Subtitle className="mb-3 text-muted">Sua senha deve ter pelo menos 8 caracteres e conter pelo menos um número, uma letra maiúscula, uma letra minúscula e um caractere especial.</Card.Subtitle>
               <Card.Text>
-            <Form className="mb-1" noValidate validated={validated} onSubmit={handleSubmitPassword}>
+            <Form className="mb-1" onSubmit={handleSubmitPassword}>
               <Row>
                 <Col>
                 <Form.Group>
@@ -324,6 +340,7 @@ const SettingsPage = () => {
                       aria-describedby="passwordInput"
                       required
                       onChange={handleInputChange}
+                      isInvalid={!isValidPassword(formData.password)}
                     />
                   <Form.Control.Feedback type="invalid">
                     Insira uma senha válida.
@@ -341,6 +358,7 @@ const SettingsPage = () => {
                       aria-describedby="passwordConfirmInput"
                       required
                       onChange={handleInputChange}
+                      isInvalid={formData.password !== formData.passwordConfirm}
                     />
                   <Form.Control.Feedback type="invalid">
                     As senhas precisam ser iguais.
@@ -349,7 +367,7 @@ const SettingsPage = () => {
                 </Form.Group>
               </Col>
               <Col>
-                <Button variant="warning">
+                <Button variant="warning" type="submit">
                   Confirmar
                 </Button>
               </Col>
@@ -382,7 +400,7 @@ const SettingsPage = () => {
               <Card.Title>Deletar Conta</Card.Title>
               <Card.Subtitle className="mb-3 text-muted">Uma vez deletada, você perderá o acesso a sua conta e aos seus pedidos.</Card.Subtitle>
               <Card.Text>
-            <Form className="mb-1" noValidate validated={validated} onSubmit={handleDeleteAccount}>
+            <Form className="mb-1" onSubmit={handleDeleteAccount}>
           <Row>
             <Col>
                 <Form.Group>
@@ -394,6 +412,7 @@ const SettingsPage = () => {
                       aria-describedby="passwordInput"
                       required
                       onChange={handleInputChange}
+                      isInvalid={!isValidPassword(formData.password)}
                     />
                   <Form.Control.Feedback type="invalid">
                     Insira uma senha válida.
@@ -411,6 +430,7 @@ const SettingsPage = () => {
                         aria-describedby="passwordConfirmInput"
                         required
                         onChange={handleInputChange}
+                        isInvalid={formData.password !== formData.passwordConfirm}
                       />
                   <Form.Control.Feedback type="invalid">
                     As senhas precisam ser iguais.
@@ -419,7 +439,7 @@ const SettingsPage = () => {
               </Form.Group>
             </Col>
           <Col>
-          <Button variant="danger">
+          <Button variant="danger" type="submit">
             Confirmar
           </Button>
         </Col>
