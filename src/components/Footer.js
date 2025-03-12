@@ -23,7 +23,7 @@ function FooterComponent(){
         </Modal.Header>
         <Modal.Body>
             <p>Nós somos um restaurante em funcionamento na cidade de <span className="fw-bold">João Monlevade - MG</span>, prontos para lhe oferecer a melhor experiência de sabor e entrega na região!</p>
-            <p>Agora, sobre o site: ele está sendo desenvolvido apenas para um trabalho de faculdade. Você pode conferir detalhes sobre ele visitando meu <a href="https://github.com/sakikout" className="fw-bold no-decoration">Github</a>!</p></Modal.Body>
+            <p>Agora, sobre o site: ele está sendo desenvolvido apenas para um trabalho de faculdade. Você pode conferir detalhes sobre ele visitando meu <a href="https://github.com/sakikout" target="_blank" className="fw-bold no-decoration" rel="noreferrer">Github</a>!</p></Modal.Body>
         <Modal.Footer>
           <Button variant="warning" onClick={handleClose}>
             Entendi!
