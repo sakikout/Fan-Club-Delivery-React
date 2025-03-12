@@ -3,26 +3,32 @@ import { useCart } from "./context/CartProvider";
 import { Button, ListGroup, Modal, Row, Image } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useUser } from "./context/UserProvider";
 
 function CartModal({ show, onHide }) {
+  const { userData } = useUser();
   const { cart, removeFromCart, clearCart, feePrice } = useCart();
   const [ subtotal, setSubTotal ] = useState(0);
   const [ totalProducts, setTotalProducts ] = useState(0);
   const [ disabled, setDisabled ] = useState(true);
+  const [ addressError, setAddressError ] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     function calculateSubtotal(cart) {
-      return cart.reduce((total, item) => {
+      const subtotalWithoutFee = cart.reduce((total, item) => {
         const itemTotal = item.price * item.quantity;
         
         const addonsTotal = item.addons
           ? item.addons.reduce((sum, addon) => sum + addon.price, 0) * item.quantity
           : 0;
-        
-        return total + itemTotal + addonsTotal + feePrice;
+    
+        return total + itemTotal + addonsTotal;
       }, 0);
+    
+      return subtotalWithoutFee + parseFloat(feePrice || 0);
     }
+    
 
     function calculateTotalProducts(cart) {
       return cart.reduce((total, item) => {
@@ -41,11 +47,18 @@ function CartModal({ show, onHide }) {
           const value_p = calculateTotalProducts(cart);
           setSubTotal(value);
           setTotalProducts(value_p);
-          setDisabled(false);
+
+          if (!userData.address.trim()){
+            setAddressError(true);
+
+          } else {
+            setDisabled(false);
+          }
+          
         }
       }
       
-    }, [cart]);
+    }, [cart, feePrice, userData?.address]);
 
     function calculateSubtotalItem(item) {
       const itemTotal = item.price * item.quantity;
@@ -60,6 +73,7 @@ function CartModal({ show, onHide }) {
 
     const handleClearCart = () => {
       clearCart();
+      setTotalProducts(0);
       setSubTotal(0);
     }
 
@@ -120,6 +134,11 @@ function CartModal({ show, onHide }) {
       </div>
       </Modal.Body>
       <Modal.Footer>
+      <Row>
+        { addressError === true ?
+          <span className="error-text">Você precisa informar um endereço!</span>
+        : <></>}
+        </Row>
         <Button 
           variant="warning" 
           onClick={() => navigate("/checkout")}
