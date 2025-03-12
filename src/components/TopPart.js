@@ -104,7 +104,7 @@ function TopPart(props){
       <>
       <Container className="gap-2 mt-3 mb-3">
       <Row>
-      <p className="fw-bold fs-4">É bom te ver por aqui, {userData.name}!</p> 
+      <p className="fw-bold fs-4">É bom te ver por aqui, {userData?.name}!</p> 
         <Col xs={6}>
         <Row className='mt-1'>
         <Form.Group as={Col} xs={9}>
