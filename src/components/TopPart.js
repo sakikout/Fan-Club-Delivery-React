@@ -104,9 +104,9 @@ function TopPart(props){
       <>
       <Container className="gap-2 mt-3 mb-3">
       <Row>
+      <p className="fw-bold fs-4">É bom te ver por aqui, {userData.name}!</p> 
         <Col xs={6}>
-        <p className="fw-bold fs-4">Endereço de Entrega</p>
-        <Row>
+        <Row className='mt-1'>
         <Form.Group as={Col} xs={9}>
         <InputGroup hasValidation>
          <InputGroup.Text><FaMapMarkerAlt/></InputGroup.Text>
@@ -182,7 +182,8 @@ function TopPart(props){
 
         <Col>
         <div className="gap-2 mt-1 mb-3"> 
-        <span className="fw-bold fs-4" >Informações de Entrega</span> 
+        
+
         <ListGroup>
             { feePrice ? 
             <ListGroup.Item>Taxa de Entrega: <span className="fw-bold fs-6">R${feePrice}</span></ListGroup.Item>
