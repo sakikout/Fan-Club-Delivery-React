@@ -186,6 +186,9 @@ main {
   align-self: flex-start;
 }
 
+.image-tile{
+  border-radius: 15px !important;
+}
 
 .footer-logo{
   text-decoration: none;
