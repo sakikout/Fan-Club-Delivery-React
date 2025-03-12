@@ -101,8 +101,9 @@ function CartModal({ show, onHide }) {
                 <Row className="d-flex">
                 <Image 
                   src={item.imagepath}
+                  className="image-tile"
                   style={{ maxWidth: "200px", height: "auto", display: "block"}}
-                  rounded/>
+                  />
                   <div className="w-50">
                   <h5>{item.name}</h5>
                   <p>Preço unitário: R${item.price.toFixed(2)}</p>
