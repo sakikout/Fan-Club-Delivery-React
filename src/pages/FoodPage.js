@@ -43,7 +43,7 @@ const FoodPage = () => {
               {foods
                 .filter((food) => food.category === category)
                 .map((food) => (
-                  <Col key={food.id} md={4} className="mb-3">
+                  <Col key={food.id} md={3} className="mb-3">
                     <FoodTile
                         key={food.id}
                         id={food.id}
