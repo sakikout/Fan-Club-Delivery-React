@@ -9,7 +9,7 @@ function FoodTile(props){
 
     return (
       <>
-      <Card>
+      <Card style={{ width: '18rem' }}> 
       <Card.Img variant="top" src={imagepath}/>
       <Card.Body>
         <Card.Title>{name}</Card.Title>
