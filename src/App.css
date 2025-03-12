@@ -93,6 +93,11 @@ main {
   color: #050505 !important;
 }
 
+.error-text {
+  color: red;
+  font-weight: bold;
+}
+
 .brand_logo {
   height: auto !important;
   max-width: 250px !important;
