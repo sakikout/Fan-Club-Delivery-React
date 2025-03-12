@@ -67,14 +67,15 @@ function FoodDetailsModal(props) {
             centered
         >
             <Modal.Header closeButton>
-                
+            <Modal.Title className="fs-5">Descrição do Item</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="">
               <Row className="d-flex justify-content-center">
                 <Image 
                   src={imagepath}
+                  className="image-tile"
                   style={{ maxWidth: "250px", height: "auto", display: "block"}}
-                  rounded fluid/>
+                  />
                 <div className="w-50 mt-3">
                   <h4>{name}</h4>
                   <p className="fs-5">R${price}</p>
@@ -85,10 +86,12 @@ function FoodDetailsModal(props) {
                     quantity={quantity}></QuantitySelector>
                 </div>
                 </Row>
+                { availableaddons[0]?.name ? 
                 <Row className="m-3">
                 <h5>Adicionais</h5>
                 <ListGroup variant="flush" >
-                    {availableaddons.map((addon, index) => (
+                    
+                   { availableaddons.map((addon, index) => (
                         <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
                             <div>
                                 <Form.Check
@@ -101,7 +104,8 @@ function FoodDetailsModal(props) {
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
-                </Row>
+                </Row> 
+                : <></>}
             <Row className="m-3">
               <h5>Observações</h5>
                 <Form.Control
