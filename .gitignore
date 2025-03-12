@@ -23,3 +23,14 @@ yarn-debug.log*
 yarn-error.log*
 
 /src/services/firebase.js
+/node_modules
+/node_modules/.bin
+/node_modules
+/node_modules/.bin
+/node_modules
+/node_modules
+/src/fonts/Montserrat
+/src/fonts/Nunito_Sans
+/src/fonts/Poppins
+/src/fonts/Quicksand/static
+/src/fonts/Quicksand
