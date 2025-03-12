@@ -131,13 +131,6 @@ const SettingsPage = () => {
         lastName: formData.lastName
       }
 
-      if (formData.lastName === ""){
-        data.lastName = userData.lastName;
-
-      } else if (formData.name === ""){
-        data.name = userData.name;
-      }
-
       try {
         await firestoreService.updateUserNameLastName(data.name, data.lastName);
         alert("O nome e sobrenome foram alterados com sucesso!");
