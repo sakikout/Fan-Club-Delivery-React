@@ -34,7 +34,7 @@ const ReceiptModal = (props) => {
     <>
     <FeedbackModal
       id={id}
-      name={orderInfo?.order.orderName}
+      name={orderInfo.order?.orderName}
       show={showModal}
       onHide={() => setShowModal(false)}>
     </FeedbackModal>
