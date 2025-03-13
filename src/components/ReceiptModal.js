@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, Button, ListGroup, Modal } from "react-bootstrap";
-import CustomNavBar from '../components/NavBar';
+import { ListGroup, Modal } from "react-bootstrap";
 import FirestoreService from "../services/firestore";
 import { useUser } from "../components/context/UserProvider";
-import { useCart } from "./context/CartProvider";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import FeedbackModal from "./FeedbackModal";
 
 const firestoreService = new FirestoreService();
 
 const ReceiptModal = (props) => {
     const { id, show, onHide } = props;
-    const { user, userData } = useUser();
+    const { user } = useUser();
     const [ orderInfo, setOrderInfo ] = useState({});
+    const [ showModal, setShowModal ] = useState(false);
 
     useEffect(() => {
-      const fetchCards = async () => {
+      const fetchOrder= async () => {
         if (user) {
           const userOrder = await firestoreService.getOrderById(id);
           setOrderInfo(userOrder);
         }
       };
   
-      fetchCards();
+      fetchOrder();
   
     }, [id, user]);
 
@@ -32,6 +32,13 @@ const ReceiptModal = (props) => {
 
   return (
     <>
+    <FeedbackModal
+      id={id}
+      name={orderInfo?.order.orderName}
+      show={showModal}
+      onHide={() => setShowModal(false)}>
+    </FeedbackModal>
+
       <Modal
             {...props}
             size="lg"
@@ -75,7 +82,7 @@ const ReceiptModal = (props) => {
             }
         </Modal.Body>
         <Modal.Footer >
-        <span>Gostou do pedido?</span> <a className="fw-bold text_link" onClick={() => {}}>Deixe uma avaliação!</a>
+        <span>Gostou do pedido?</span> <a className="fw-bold text_link" onClick={() => { setShowModal(true); }}>Deixe uma avaliação!</a>
         </Modal.Footer>
         </Modal>
     </>
