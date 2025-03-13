@@ -5,12 +5,15 @@ import { FaRegUser, FaKey } from "react-icons/fa";
 import '../App.css';
 import AuthService from "../services/auth/AuthService";
 import logo from "../assets/logo/fa_clube_logo.png"
+import CustomAlert from "../components/CustomAlert";
 
 const authService = new AuthService();
 
 function SignIn(){
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
+    const [ alertMessage, setAlertMessage ] = useState({});
+    const [ show, setShow ] = useState(false);
   
     const [formSignIn, setFormSignIn] = useState({
       nome: "",
@@ -33,7 +36,7 @@ function SignIn(){
           ...prevData,
           [name]: value,
         }));
-        validateField(name, value);
+      validateField(name, value);
     };
   
     const handleSubmit = async (event) => {
@@ -55,10 +58,28 @@ function SignIn(){
             formSignIn.nome,
             formSignIn.sobrenome
           );
+
           alert("Usuário cadastrado com sucesso!");
+
+          setAlertMessage({
+            name: "Cadastro Bem Sucedido!",
+            message: "Você será redirecionado para entrar na sua conta.",
+            variant: "success"
+          })
+          
+          setShow(true);
+          setTimeout(() => {}, 2000);
           navigate("/");
+
         } catch (error) {
-          alert(error.message);
+
+          setAlertMessage({
+            name: error.name,
+            message: error.message,
+            variant: "danger"
+          })
+
+          setShow(true);
         }
       }
 
@@ -106,6 +127,21 @@ function SignIn(){
     
   
     return (
+      <>
+      <Row className="d-flex align-items-center mt-4">
+      { show === true ?
+        <CustomAlert 
+        variant={alertMessage.variant}
+        title={alertMessage.name}
+        body={alertMessage.message}
+        show={show}
+        setShow={setShow}
+        ></CustomAlert>
+      
+      : <></>
+    }
+    </Row>
+
       <Container className="d-flex align-items-center justify-content-center">
       <Card className="p-5 login_container">
       <Row className="mx-auto">
@@ -196,6 +232,7 @@ function SignIn(){
     </div>
       </Card>
     </Container>
+    </>
     );
   }
   
