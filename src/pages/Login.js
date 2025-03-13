@@ -5,6 +5,7 @@ import { FaRegUser, FaKey } from "react-icons/fa";
 import '../App.css';
 import AuthService from "../services/auth/AuthService";
 import logo from "../assets/logo/fa_clube_logo.png"
+import CustomAlert from "../components/CustomAlert";
 
 const authService = new AuthService();
 
@@ -13,6 +14,8 @@ function Login(){
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [validated, setValidated] = useState(false);
+    const [ show, setShow ] = useState(false);
+    const [ alertMessage, setAlertMessage ] = useState({});
   
     const handleSignIn = () => {
       navigate("signIn",  { replace: false });
@@ -37,7 +40,12 @@ function Login(){
             );
             navigate("home");
         } catch (error) {
-          alert(error.message);
+          setAlertMessage({
+            name: error.name,
+            message: error.message,
+            variant: "danger"
+          })
+          setShow(true);
         }
 
     };
@@ -50,6 +58,19 @@ function Login(){
   
     return (
       <>
+      <Row className="d-flex align-items-center mt-4">
+      { show === true ?
+        <CustomAlert 
+        variant={alertMessage.variant}
+        title={alertMessage.name}
+        body={alertMessage.message}
+        show={show}
+        setShow={setShow}
+        ></CustomAlert>
+      
+      : <></>
+    }
+    </Row>
       <Container className="w-50 d-flex align-items-center justify-content-center">
       <Card className="p-5 login_container">
       <Row className="mx-auto">
