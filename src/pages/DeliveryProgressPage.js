@@ -53,6 +53,12 @@ const DeliveryProgress = () => {
     setNewMessage(" "); 
   };
 
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  };
+  
+
   return (
     <>
       <CustomNavBar />
@@ -95,6 +101,7 @@ const DeliveryProgress = () => {
                     {messages.map((msg) => (
                       <div key={msg.id} className={msg.sender === "user" ? "message user" : "message restaurant"}>
                         <p>{msg.text}</p>
+                        <p className="time-message">{formatTimestamp(msg.timestamp)}</p>
                       </div>
                     ))}
                     </Card.Body>
