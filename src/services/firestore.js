@@ -33,14 +33,21 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    const orderRef = await addDoc(ordersRef, {
-      userId: user.uid,
-      data: new Date().toISOString(),
-      estimatedDeliveryTime: new Date(Date.now() + (prepTime + deliveryTime) * 60000).toISOString(),
-      order: receipt,
-      status: "Recebendo pedido"
-    });
-    return orderRef;
+    try {
+      const orderRef = await addDoc(ordersRef, {
+        userId: user.uid,
+        data: new Date().toISOString(),
+        estimatedDeliveryTime: new Date(Date.now() + (prepTime + deliveryTime) * 60000).toISOString(),
+        order: receipt,
+        status: "Recebendo pedido"
+      });
+      return orderRef;
+
+    } catch(e) {
+      console.error("Erro ao salvar pedido: ", e);
+      return {};
+    }
+
   }
 
   async getOrderById(orderId) {
@@ -63,20 +70,35 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    const ordersRef = collection(this.db, 'orders');
-    const q = query(ordersRef, where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
+    try {
+      const ordersRef = collection(this.db, 'orders');
+      const q = query(ordersRef, where('userId', '==', user.uid));
+      const querySnapshot = await getDocs(q);
+  
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+      console.error("Erro ao buscar pedidos do usuário:", e);
+      return [];
+    }
+
   }
 
   async updateOrderStatus(orderId, newStatus) {
     const orderRef = doc(this.db, 'orders', orderId);
+
+    try {
     await updateDoc(orderRef, { status: newStatus });
 
     const orderDoc = await getDoc(orderRef);
     const userId = orderDoc.data().user;
     this.sendNotification(userId, "Atualização de Pedido", `Seu pedido agora está ${newStatus}!`);
+
+    } catch (e) {
+      console.error("Erro ao atualizar status do pedido:", e);
+
+    }
+  
   }
 
   async getUserCards() {
@@ -187,16 +209,28 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    await updateDoc(doc(this.db, 'users', user.uid), { name: newName, lastName:  newLastName, displayName: newName + " " + newLastName});
-    console.log("Nome atualizado com sucesso!");
+    try {
+      await updateDoc(doc(this.db, 'users', user.uid), { name: newName, lastName:  newLastName, displayName: newName + " " + newLastName});
+      console.log("Nome atualizado com sucesso!");
+
+    } catch(e) {
+      console.error("Erro ao atualizar nome: ", e);
+
+    }
   }
 
   async updateUserEmail(newEmail) {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    await updateDoc(doc(this.db, 'users', user.uid), { email: newEmail });
-    console.log("E-mail atualizado com sucesso!");
+    try {
+      await updateDoc(doc(this.db, 'users', user.uid), { email: newEmail });
+      console.log("E-mail atualizado com sucesso!");
+
+    } catch (e) {
+      console.error("Erro ao atualizar e-mail: ", e);
+    }
+    
   }
 
   async updateUserPassword(newPassword) {
@@ -208,7 +242,7 @@ class FirestoreService {
       alert("Senha atualizada com sucesso!");
   
     } catch (error) {
-      console.error("Erro ao atualizar senha:", error);
+      console.error("Erro ao atualizar senha: ", error);
       alert("Erro ao atualizar a senha. Faça login novamente e tente outra vez.");
     }
   };
@@ -219,8 +253,15 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    await updateDoc(doc(this.db, 'users', user.uid), { address: newAddress, regionId: regionSelected, complement: complement });
-    console.log("Endereço atualizado com sucesso!");
+    try {
+      await updateDoc(doc(this.db, 'users', user.uid), { address: newAddress, regionId: regionSelected, complement: complement });
+      console.log("Endereço atualizado com sucesso!");
+
+    } catch (error) {
+      console.error("Erro ao atualizar endereço: ", error);
+
+    }
+    
   }
 
 
@@ -233,8 +274,9 @@ class FirestoreService {
       await deleteDoc(userRef);
       await user.delete();
       console.log("Conta deletada com sucesso!");
+
     } catch (e) {
-      console.error("Erro ao deletar conta:", e);
+      console.error("Erro ao deletar conta: ", e);
     }
   }
 
@@ -243,9 +285,11 @@ class FirestoreService {
       const regionsRef = collection(this.db, 'regions');
       const querySnapshot = await getDocs(regionsRef);
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
     } catch (e) {
-      console.error("Erro ao buscar regiões no catálogo:", e);
+      console.error("Erro ao buscar regiões no catálogo: ", e);
       return [];
+
     }
   }
 
@@ -255,6 +299,7 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
     
+    try {
     const messagesRef = collection(this.db, "chats", orderId, "messages");
     const q = query(messagesRef, orderBy("timestamp"));
 
@@ -265,6 +310,11 @@ class FirestoreService {
       }));
       callback(messages);
     });
+    } catch (e) {
+      console.error("Erro ao buscar mensagens: ", e);
+      return [];
+    }
+    
   }
 
   async sendMessage(orderId, text, sender) {
@@ -273,14 +323,85 @@ class FirestoreService {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
-    const messagesRef = collection(this.db, "chats", orderId, "messages");
-    await addDoc(messagesRef, {
-      userId: user.uid,
-      text,
-      sender,
-      timestamp: Date.now()
-    });
+    try {
+      const messagesRef = collection(this.db, "chats", orderId, "messages");
+      await addDoc(messagesRef, {
+        userId: user.uid,
+        text,
+        sender,
+        timestamp: Date.now()
+      });
+    } catch (e) {
+      console.error("Erro ao enviar mensagem: ", e);
+    }
+
   }
+
+  async sendFeedback(foodId, feedbackData){
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+
+    try {
+      const foodRef = collection(this.db, "foods", foodId, "feedbacks");
+      await addDoc(foodRef, feedbackData);
+
+      console.log("Avaliação enviada com sucesso!");
+    
+    } catch (e) {
+      console.error("Erro ao enviar avaliação: ", e);
+    }
+
+  }
+
+  getFeedbacks(foodId, callback) {
+    if (!foodId) throw new Error("Item não foi informado.");
+
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+    
+    try {
+    const feedbacksRef = collection(this.db, "foods", foodId, "feedbacks");
+    const q = query(feedbacksRef, orderBy("timestamp"));
+
+    return onSnapshot(q, (querySnapshot) => {
+      const feedbacks = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(feedbacks);
+    });
+    } catch (e) {
+      console.error("Erro ao buscar feedbacks: ", e);
+      return [];
+    }
+    
+  }
+
+  async getUserFeedback(foodId) {
+    if (!foodId) throw new Error("Item não foi informado.");
+
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+    
+    try {
+    const feedbacksRef = collection(this.db, "foods", foodId, "feedbacks");
+    const q = query(feedbacksRef,  where('userId', '==', user.uid));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.exists()) {
+      const queryData = querySnapshot.data();
+      return queryData;
+    } else {
+      return null;
+    }
+
+    } catch (e) {
+      console.error("Erro ao buscar feedbacks: ", e);
+      return [];
+    }
+    
+  }
+
 
 }
 
