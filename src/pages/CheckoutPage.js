@@ -72,6 +72,7 @@ const CheckoutPage = () => {
         items: cart.map(item => ({
           id: item.id,
           name: item.name,
+          imagePath: item.imagepath,
           quantity: item.quantity,
           price: item.price,
           availableAddons: item.addons ? item.addons.map(addon => ({
