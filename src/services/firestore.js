@@ -1,7 +1,9 @@
 import { getFirestore, collection, addDoc, 
         getDocs, doc, getDoc, updateDoc, deleteDoc, setDoc,
         query, where, orderBy, arrayUnion, onSnapshot } from 'firebase/firestore';
-import { getAuth, updatePassword } from 'firebase/auth';
+import { getAuth, updatePassword, updateEmail, 
+          EmailAuthProvider, reauthenticateWithCredential, deleteUser,
+          sendPasswordResetEmail } from 'firebase/auth';
 
 class FirestoreService {
   constructor() {
@@ -219,12 +221,16 @@ class FirestoreService {
     }
   }
 
-  async updateUserEmail(newEmail) {
+  async updateUserEmail(newEmail, password) {
     const user = this.auth.currentUser;
     if (!user) throw new Error("Usuário não autenticado.");
 
     try {
-      await updateDoc(doc(this.db, 'users', user.uid), { email: newEmail });
+      const credential = EmailAuthProvider.credential(user.email, password);
+        
+      await reauthenticateWithCredential(user, credential);
+      
+      await updateEmail(user, newEmail);
       console.log("E-mail atualizado com sucesso!");
 
     } catch (e) {
@@ -233,11 +239,15 @@ class FirestoreService {
     
   }
 
-  async updateUserPassword(newPassword) {
+  async updateUserPassword(currentPassword, newPassword) {
     try {
       const user = this.auth.currentUser;
       if (!user) throw new Error("Usuário não autenticado.");
   
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+      await reauthenticateWithCredential(user, credential);
+
       await updatePassword(user, newPassword);
       alert("Senha atualizada com sucesso!");
   
@@ -265,20 +275,37 @@ class FirestoreService {
   }
 
 
-  async deleteUserAccount() {
+  async deleteUserAccount(password) {
     const user = this.auth.currentUser;
     if (!user) return;
     const userRef = doc(this.db, 'users', user.uid);
     
     try {
       await deleteDoc(userRef);
-      await user.delete();
+
+      const credential = EmailAuthProvider.credential(user.email, password);
+        
+      await reauthenticateWithCredential(user, credential);
+        
+      await deleteUser(user);
+
+      
       console.log("Conta deletada com sucesso!");
 
     } catch (e) {
       console.error("Erro ao deletar conta: ", e);
     }
   }
+  
+  async sendResetPassword(email) {
+    try {
+        await sendPasswordResetEmail(this.auth, email);
+        console.alert("E-mail para redefinição enviado! Verifique sua caixa de entrada.");
+    } catch (error) {
+        console.error("Erro ao enviar e-mail de redefinição:", error);
+        console.alert("Erro ao enviar o e-mail. Verifique se o e-mail está correto.");
+    }
+}
 
   async getRegionsFromDatabase() {
     try {
@@ -343,7 +370,7 @@ class FirestoreService {
 
     try {
       const foodRef = collection(this.db, "foods", foodId, "feedbacks");
-      await addDoc(foodRef, feedbackData);
+      await addDoc(foodRef, { ...feedbackData, timestamp: Date.now(), userId: user.uid});
 
       console.log("Avaliação enviada com sucesso!");
     
@@ -352,6 +379,27 @@ class FirestoreService {
     }
 
   }
+
+  async getItemsFromOrder(orderId){
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+
+    try {
+     const orderData = await this.getOrderById(orderId);
+    
+     if (orderData.order){
+        return orderData.order.items;
+
+     } else {
+        return [];
+     }
+     
+    } catch (e) {
+      console.error("Erro ao encontrar items no pedido: ", e);
+    }
+
+  }
+
 
   getFeedbacks(foodId, callback) {
     if (!foodId) throw new Error("Item não foi informado.");
@@ -387,17 +435,42 @@ class FirestoreService {
     const feedbacksRef = collection(this.db, "foods", foodId, "feedbacks");
     const q = query(feedbacksRef,  where('userId', '==', user.uid));
     const querySnapshot = await getDocs(q);
+  
 
-    if (querySnapshot.exists()) {
-      const queryData = querySnapshot.data();
-      return queryData;
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data();
     } else {
       return null;
     }
 
     } catch (e) {
-      console.error("Erro ao buscar feedbacks: ", e);
-      return [];
+      console.error("Erro ao buscar feedback: ", e);
+      return null;
+    }
+    
+  }
+
+  async getOrderFeedback(foodId, orderId) {
+    if (!foodId) throw new Error("Item não foi informado.");
+
+    const user = this.auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado.");
+    
+    try {
+    const feedbacksRef = collection(this.db, "foods", foodId, "feedbacks");
+    const q = query(feedbacksRef,  where('orderId', '==', orderId));
+    const querySnapshot = await getDocs(q);
+  
+
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data();
+    } else {
+      return null;
+    }
+
+    } catch (e) {
+      console.error("Erro ao buscar feedback: ", e);
+      return null;
     }
     
   }
