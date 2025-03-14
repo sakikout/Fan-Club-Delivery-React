@@ -27,6 +27,7 @@ const SettingsPage = () => {
     emailConfirm: "",
     password: "",
     passwordConfirm: "",
+    newPassword: ""
   });
 
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const SettingsPage = () => {
       emailConfirm: "",
       password: "",
       passwordConfirm: "",
+      newPassword: ""
     });
 
     useEffect(() => {
@@ -62,6 +64,7 @@ const SettingsPage = () => {
       emailConfirm: "",
       password: "",
       passwordConfirm: "",
+      newPassword: ""
     });
   };
 
@@ -104,6 +107,10 @@ const SettingsPage = () => {
         if (!isValidPassword(formData.password)) error = "Insira uma senha válida.";
         break;
       
+      case "newPassword":
+        if (!isValidPassword(formData.newPassword)) error = "Insira uma senha válida.";
+        break;
+
       case "passwordConfirm":
         if (formData.password !== formData.passwordConfirm) error = "As senhas precisam ser iguais.";
         break;
@@ -194,8 +201,11 @@ const SettingsPage = () => {
 
       try {
         await firestoreService.updateUserPassword(
-          formData.password
+          formData.password,
+          formData.passwordConfirm
         );
+
+        
         alert("A senha foi alterada com sucesso!");
 
         setValidated(false);
@@ -232,11 +242,8 @@ const SettingsPage = () => {
       return;
     }
 
-    const credential = EmailAuthProvider.credential(user.email, formData.password);
-
       try {
-        await reauthenticateWithCredential(user, credential);
-        await firestoreService.deleteUserAccount();
+        await firestoreService.deleteUserAccount(formData.password);
         setValidated(false);
 
         alert("Sua conta foi deletada.");
@@ -361,18 +368,18 @@ const SettingsPage = () => {
               <Col>
             <Form.Group>
                <InputGroup>
-               <InputGroup.Text><TbMailPlus/></InputGroup.Text>
+               <InputGroup.Text><FaKey/></InputGroup.Text>
                   <Form.Control
-                    name="emailConfirm"
-                    type="text"
-                    placeholder="Confirme o novo e-mail"
+                    name="password"
+                    type="password"
+                    placeholder="Insira sua senha"
                     aria-describedby="emailConfirmInput"
                     required
                     onChange={handleInputChange}
-                    isInvalid={!!formErrors.emailConfirm}
+                    isInvalid={!!formErrors.password}
                   />
                 <Form.Control.Feedback type="invalid">
-                  {formErrors.emailConfirm}
+                  {formErrors.password}
                 </Form.Control.Feedback>
                 </InputGroup>
             </Form.Group>
@@ -409,7 +416,7 @@ const SettingsPage = () => {
                     <Form.Control
                       name="password"
                       type="password"
-                      placeholder="Insira a nova senha"
+                      placeholder="Insira a senha atual"
                       aria-describedby="passwordInput"
                       required
                       onChange={handleInputChange}
@@ -426,16 +433,16 @@ const SettingsPage = () => {
                   <InputGroup>
                   <InputGroup.Text><GoKey/></InputGroup.Text>
                     <Form.Control
-                      name="passwordConfirm"
+                      name="newPassword"
                       type="password"
-                      placeholder="Confirme a nova senha"
+                      placeholder="Insira a nova senha"
                       aria-describedby="passwordConfirmInput"
                       required
                       onChange={handleInputChange}
-                      isInvalid={!!formErrors.passwordConfirm}
+                      isInvalid={!!formErrors.newPassword}
                     />
                   <Form.Control.Feedback type="invalid">
-                    {formErrors.passwordConfirm}
+                    {formErrors.newPassword}
                   </Form.Control.Feedback>
                   </InputGroup>
                 </Form.Group>
