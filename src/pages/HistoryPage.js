@@ -19,7 +19,7 @@ const DeliveryHistory = () => {
     try {
         const orders_db = await firestoreService.getUserOrders();
         setOrders(orders_db);
-        console.log(orders_db);
+        // console.log(orders_db);
 
       } catch (error) {
             console.error("Erro ao buscar pedidos do usuário:", error);
