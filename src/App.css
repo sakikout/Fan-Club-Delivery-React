@@ -187,6 +187,19 @@ main {
   transform: scale(1.2);
 }
 
+.star-feedback {
+  font-size: 20px;
+  margin: 5px;
+}
+
+.selector {
+  display: inline;
+  padding: 10px 15px;
+  border: 2px solid #ccc;
+  border-radius: 50px;
+  /* background-color: #ffffff; */
+}
+
 .footer-logo{
   text-decoration: none;
   color: black;
