@@ -3,6 +3,9 @@ import { db } from "../services/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { Tab, Tabs, Container, Row, Col } from "react-bootstrap";
 import FoodTile from "../components/FoodTile";
+import FirestoreService from "../services/firestore";
+
+const firestoreService = new FirestoreService();
 
 const FoodPage = () => {
   const [foods, setFoods] = useState([]);
@@ -14,6 +17,7 @@ const FoodPage = () => {
         const querySnapshot = await getDocs(collection(db, "foods"));
         const foodList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
+          rating: firestoreService.getAvgFeedback(doc.id),
           ...doc.data(),
         }));
 
@@ -21,6 +25,7 @@ const FoodPage = () => {
 
         const uniqueCategories = [...new Set(foodList.map((food) => food.category))];
         setCategories(uniqueCategories);
+
       } catch (error) {
         console.error("Erro ao buscar comidas:", error);
       }
@@ -52,6 +57,7 @@ const FoodPage = () => {
                         price={food.price} 
                         imagepath={food.imagePath} 
                         availableaddons={food.availableAddons}
+                        rating={food.rating}
                         > 
                     </FoodTile>
                   </Col>
