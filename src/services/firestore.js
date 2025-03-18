@@ -3,7 +3,7 @@ import { getFirestore, collection, addDoc,
         query, where, orderBy, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { getAuth, updatePassword, updateEmail, 
           EmailAuthProvider, reauthenticateWithCredential, deleteUser,
-          sendPasswordResetEmail } from 'firebase/auth';
+          sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
 
 class FirestoreService {
   constructor() {
@@ -231,10 +231,12 @@ class FirestoreService {
       await reauthenticateWithCredential(user, credential);
       
       await updateEmail(user, newEmail);
-      console.log("E-mail atualizado com sucesso!");
+
+      await sendEmailVerification(user);
+    alert("E-mail atualizado com sucesso! Um e-mail de verificação foi enviado para o novo endereço.");
 
     } catch (e) {
-      console.error("Erro ao atualizar e-mail: ", e);
+      throw e;
     }
     
   }
@@ -247,13 +249,14 @@ class FirestoreService {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
 
       await reauthenticateWithCredential(user, credential);
+      console.log("Reautenticação bem-sucedida!");
 
       await updatePassword(user, newPassword);
       alert("Senha atualizada com sucesso!");
   
     } catch (error) {
       console.error("Erro ao atualizar senha: ", error);
-      alert("Erro ao atualizar a senha. Faça login novamente e tente outra vez.");
+      throw error;
     }
   };
   
@@ -424,6 +427,33 @@ class FirestoreService {
     }
     
   }
+
+async getAvgFeedback(foodId) {
+    if (!foodId) throw new Error("Item não foi informado.");
+
+    try {
+        const feedbacksRef = collection(this.db, "foods", foodId, "feedbacks");
+        const querySnapshot = await getDocs(feedbacksRef);
+
+        let totalRating = 0;
+        let count = 0;
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.rate !== undefined) {
+                totalRating += data.rate;
+                count++;
+            }
+        });
+
+        if (count === 0) return 0;
+
+        return totalRating / count;
+    } catch (e) {
+        console.error("Erro ao buscar feedbacks: ", e);
+        return 0;
+    }
+}
 
   async getUserFeedback(foodId) {
     if (!foodId) throw new Error("Item não foi informado.");
