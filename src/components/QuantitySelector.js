@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { FaMinus, FaPlus } from "react-icons/fa";
 import '../App.css';
 
@@ -8,7 +8,7 @@ function QuantitySelector(props){
 
     return (
     <>
-    <Container className="gap-3">
+    <Container className="gap-3 selector">
         <FaMinus className='pure_icon' onClick={minusfunction}></FaMinus>
         <span className="m-4">{ quantity }</span>
         <FaPlus className='pure_icon' onClick={plusfunction}></FaPlus>
