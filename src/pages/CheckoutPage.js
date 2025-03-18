@@ -53,15 +53,15 @@ const CheckoutPage = () => {
   
       const subtotal = cart.reduce((total, item) => {
         const itemTotal = item.price * item.quantity;
-  
-        const addonsTotal = item.availableAddons
-          ? item.availableAddons.reduce((sum, addon) => sum + addon.price * addon.quantity, 0)
+        
+        const addonsTotal = item.addons
+          ? item.addons.reduce((sum, addon) => sum + addon.price, 0) * item.quantity
           : 0;
-  
+    
         return total + itemTotal + addonsTotal;
       }, 0);
 
-      const total = subtotal + feePrice;
+      const total = subtotal + parseFloat(feePrice || 0);
       const address = userData.address;
       const complement = userData?.complement;
       const orderName = cart.map(item => item.name).join(" + ");
