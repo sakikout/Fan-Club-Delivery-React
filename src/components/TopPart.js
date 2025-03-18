@@ -8,7 +8,7 @@ import { useCart } from "./context/CartProvider";
 
 const firestoreService = new FirestoreService();
 
-function TopPart(props){
+function TopPart(){
     const { userData } = useUser();
     const { feePrice, setFeePrice, setDeliveryTime } = useCart();
     const [ addressInput, setAddress ] = useState("");
@@ -16,12 +16,14 @@ function TopPart(props){
     const [ addressError, setAddressError ] = useState(false);
     const [ regionError, setRegionError ] = useState(false);
     const [ regions, setRegions ] = useState([]);
+    const [ userAddress, setUserAddress ] = useState("");
     const [ selectedRegion, setSelectedRegion ] = useState("");
     const [ deliveryTime, setDeliveryTimeString ] = useState("");
     const [ prepTimeString, setPrepTimeString ] = useState("");
     const [ userRegion, setUserRegion ]= useState("");
     const [ validated, setValidated ] = useState(true);
 
+    
     useEffect(() => {
         async function fetchData() {
             try {
@@ -33,6 +35,7 @@ function TopPart(props){
                     
                     if (user_region) {
                         setUserRegion(user_region.name);
+                        setUserAddress(userData?.address);
                         setDeliveryTime(user_region.prepTime, user_region.deliveryTime);
                         setDeliveryTimeString(`${user_region.deliveryTime} minutos`);
                         setPrepTimeString(`${user_region.prepTime} minutos`);
@@ -47,7 +50,7 @@ function TopPart(props){
         }
     
         fetchData();
-    }, [setDeliveryTime, setFeePrice, userData]);
+    }, []);
 
 
     const handleInputChange = (event) => {
@@ -89,13 +92,27 @@ function TopPart(props){
              complement
             );
             
-            console.alert("Endereço atualizado!");
+            alert("Endereço atualizado!");
+
+            const user_region = regions.find(region => String(region.id) === selectedRegion);
+                
+            if (user_region) {
+                setUserRegion(user_region.name);
+                setUserAddress(addressInput);
+                setDeliveryTime(user_region.prepTime, user_region.deliveryTime);
+                setDeliveryTimeString(`${user_region.deliveryTime} minutos`);
+                setPrepTimeString(`${user_region.prepTime} minutos`);
+                setFeePrice(user_region.feePrice);
+            } else {
+                console.warn("Região do usuário não encontrada.");
+            }
+        
 
             setRegionError(false);
             setAddressError(false);
            
         } catch (error) {
-            console.alert(error.message);
+            alert(error.message);
         }
 
     }
@@ -128,7 +145,7 @@ function TopPart(props){
         <Form.Text 
         className="fw-bold fs-6"
         id="address" muted> 
-        Endereço atual: {userData.address} - {userRegion}</Form.Text>
+        Endereço atual: {userAddress} - {userRegion}</Form.Text>
         : " "
 
         }
