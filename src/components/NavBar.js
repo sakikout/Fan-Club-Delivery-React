@@ -12,6 +12,8 @@ function CustomNavBar() {
   const navigate = useNavigate();
   const [showCart, setShowCart] = useState(false);
 
+  /*<Navbar className="nav-custom shadow-sm" expand="lg" variant="dark" fixed="top"> */
+
   return (
     <>
       <Navbar className="nav-custom shadow-sm" expand="lg" variant="dark" fixed="top">
@@ -44,7 +46,7 @@ function CustomNavBar() {
                   : " "
                 }
               </Button>
-              <Button variant="danger" className="fs-6" onClick={logout}>
+              <Button variant="danger" className="fs-6" onClick={() => { logout(); navigate("/");}}>
                 <FaSignOutAlt className="me-2" /> Sair
               </Button>
             </div>
