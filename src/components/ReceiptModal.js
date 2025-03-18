@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ListGroup, Modal } from "react-bootstrap";
 import FirestoreService from "../services/firestore";
-import { useUser } from "../components/context/UserProvider";
+import { useUser } from "./context/UserProvider";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import FeedbackModal from "./FeedbackModal";
