@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, ListGroup, Modal, Image, Row } from "react-bootstrap";
 import FirestoreService from "../services/firestore";
-import { useUser } from "../components/context/UserProvider";
+import { useUser } from "./context/UserProvider";
 import ItemFeedback from "./ItemFeedback";
 
 const firestoreService = new FirestoreService();
