@@ -2,9 +2,10 @@ import React, {useState } from 'react';
 import { Card, ListGroup, Button} from 'react-bootstrap';
 import '../App.css';
 import FoodDetailsModal from './FoodDetails';
+import { FaStar } from "react-icons/fa";
 
 function FoodTile(props){
-    const { id, name, description, price, imagepath, availableaddons } = props;
+    const { id, name, description, price, imagepath, availableaddons, rating } = props;
     const [modalShow, setModalShow] = useState(false);
 
     return (
@@ -19,6 +20,7 @@ function FoodTile(props){
       </Card.Body>
       <ListGroup className="list-group-flush">
         <ListGroup.Item className="fs-5">R${price.toFixed(2)}</ListGroup.Item>
+        <ListGroup.Item className="fs-6"><FaStar className="text-warning star-feedback"></FaStar>{rating}</ListGroup.Item>
       </ListGroup>
       <Card.Body>
         <Button className="fw-bold fs-5"
