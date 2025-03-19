@@ -43,7 +43,7 @@ const Receipt = (props) => {
   
                 {orderInfo.order.items.map((item, index) => (
                   <ListGroup.Item key={index}>
-                    <strong>{item.quantity}x {item.name}</strong> - R$ {(item.price * item.quantity)}
+                    <strong>{item.quantity} x {item.name}</strong> - R$ {(item.price * item.quantity)}
                     {item.availableAddons && item.availableAddons.length > 0 && (
                       <ul className="mt-1 list-unstyled" style={{ fontSize: "0.9rem", color: "gray" }}>
                         {item.availableAddons.map((addon, i) => (
@@ -56,7 +56,7 @@ const Receipt = (props) => {
                 
               </ListGroup>
 
-              <p className="mb-1">Endereço: {orderInfo.order.address} </p>
+              <p className="mb-1">Endereço: {orderInfo.order.address} { orderInfo.order.complement ? <> - Complemento {orderInfo.order?.complement} </>: " "} {orderInfo.order.region ? <> - {orderInfo.order?.region}</> : " "}</p>
               <p className="mb-1">Forma de Pagamento: {orderInfo.order.paymentMethod}</p>
               {orderInfo.order.paymentMethod === "Dinheiro" && <p>Troco para: R$ {orderInfo.order.changeFor}</p>}
               <h5 className="mt-3">Total: R$ {orderInfo.order.total}</h5>
