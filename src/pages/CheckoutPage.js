@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, FloatingLabel, Form, Button, InputGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, ListGroup, Row, Col, FloatingLabel, Form, Button, InputGroup, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import FirestoreService from "../services/firestore";
 import { QRCodeCanvas } from "qrcode.react";
 import { FaRegCopy } from "react-icons/fa";
@@ -17,16 +17,47 @@ const CheckoutPage = () => {
   const { payment, setPayment, setCurrentOrder, feePrice, prepTime, deliveryTime, cart, clearCart } = useCart();
   const [ paymentMethod, setPaymentMethod ] = useState("");
   const [ troco, setTroco ] = useState("");
-  const [qrValue, setQrValue] = useState("");
-  const [show, setShow] = useState(false);
+  const [ qrValue, setQrValue ] = useState("");
+  const [ subtotal, setSubtotal ] = useState(0.0);
+  const [ region, setUserRegion ] = useState("");
+  const [ show, setShow ] = useState(false);
   const target = useRef(null);
 
   
   useEffect(() => {
-    console.log(payment);
-    console.log(paymentMethod);
+    async function fetchRegion() {
+      try {
+          const regions_db = await firestoreService.getRegionsFromDatabase();
+          if (userData?.regionId) {
+              const user_region = regions_db.find(region => String(region.id) === userData.regionId);
+              if (user_region) {
+                  setUserRegion(user_region.name);
+              } else {
+                  console.warn("Região do usuário não encontrada.");
+              }
+          }
+      } catch (error) {
+          console.alert("Erro ao carregar regiões: " + error.message);
+      }
+  }
 
-  }, [payment, paymentMethod]);
+    const subtotal = cart.reduce((total, item) => {
+      const itemTotal = item.price * item.quantity;
+      
+      const addonsTotal = item.addons
+        ? item.addons.reduce((sum, addon) => sum + addon.price, 0) * item.quantity
+        : 0;
+  
+      return total + itemTotal + addonsTotal;
+    }, 0);
+
+    fetchRegion();
+    setSubtotal(subtotal + parseFloat(feePrice || 0));
+
+    // console.log(payment);
+    // console.log(paymentMethod);
+
+  }, [cart, feePrice, payment, paymentMethod, userData.regionId]);
 
   const validateChange = (change) => {
 
@@ -86,6 +117,7 @@ const CheckoutPage = () => {
         paymentMethod: payment,
         deliveryTime,
         address,
+        region,
         complement
       };
   
@@ -124,9 +156,36 @@ const CheckoutPage = () => {
     return (
       <>
       <CustomNavBar></CustomNavBar>
-      <Container >
+      <Container>
         <Col className="gap-2 mt-3 mb-3"> 
         <h2 className="fw-bold">Checkout</h2>
+        <Container className="mt-3 mb-3">
+          <Card className="text-center">
+            <Card.Header className="fw-bold">Pedido</Card.Header>
+            <Card.Body>
+              <ListGroup variant="flush">
+                {cart.map((item, index) => (
+                  <ListGroup.Item key={index}>
+                    <strong>{item.quantity} x {item.name}</strong> - R$ {(item.price * item.quantity)}
+                    {item.availableAddons && item.availableAddons.length > 0 && (
+                      <ul className="mt-1 list-unstyled" style={{ fontSize: "0.9rem", color: "gray" }}>
+                        {item.availableAddons.map((addon, i) => (
+                          <li key={i}>{addon.name} (+ R$ {(addon.price)})</li>
+                        ))}
+                      </ul>
+                    )}
+                  </ListGroup.Item>
+                ))}
+                
+              </ListGroup>
+
+              <p className="mb-1">Endereço: {userData.address} { userData.complement ? <> - Complemento {userData?.complement} </>: " "} - {region}</p>
+              <h5 className="mt-3">Total: R${subtotal}</h5>
+            
+            </Card.Body>
+          </Card>
+
+      </Container>
         <FloatingLabel controlId="floatingPaymentMethod" label="Método de Pagamento">
             <Form.Select 
             name= "paymentMethod"
@@ -170,7 +229,7 @@ const CheckoutPage = () => {
             <Form.Control
               name = "changeFor"
               onChange={(e) => {setTroco(e.target.value)}}
-              placeholder="Insira o troco necessário. Exemplo de formato aceito: 50.00"
+              placeholder="Insira para quanto será o troco. Formato aceito: 50.00"
               aria-describedby="changeFor"
             />
             <Form.Control.Feedback type="invalid">
